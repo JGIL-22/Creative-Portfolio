@@ -236,8 +236,8 @@ window.playDevIntro = function() {
   resizeI();
   window.addEventListener('resize', resizeI);
 
-  // Stars (twinkling background)
-  const stars = Array.from({length: 80}, () => ({
+  // Stars (twinkling background) — reduced count for perf
+  const stars = Array.from({length: 40}, () => ({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
     r: 0.5 + Math.random() * 1.5,
@@ -246,10 +246,10 @@ window.playDevIntro = function() {
     pulseSpeed: 0.02 + Math.random() * 0.03,
   }));
 
-  // Constellation nodes
+  // Constellation nodes — reduced count for perf
   const CONN_DIST = 140;
   const COLORS = ['0,255,200', '100,140,255', '140,80,255', '0,200,255'];
-  const nodes = Array.from({length: 30}, () => ({
+  const nodes = Array.from({length: 18}, () => ({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
     vx: (Math.random() - 0.5) * 0.35,
@@ -313,7 +313,7 @@ window.playDevIntro = function() {
 
   let progress = 0, done = false;
   let start = null;
-  const DURATION = 4000;
+  const DURATION = 2000;
 
   function tick(now) {
     if (done) return;
@@ -365,7 +365,7 @@ window.playAirIntro = function() {
 
   let progress = 0, done = false;
   let start = null;
-  const DURATION = 4000;
+  const DURATION = 2000;
 
   function tick(now) {
     if (done) return;
@@ -406,11 +406,13 @@ window.playAirIntro = function() {
     H = canvas.height = window.innerHeight;
   }
 
-  const PARTICLE_COUNT = 90;
-  const CONNECTION_DIST = 160;
+  // Reduced particle count for better performance
+  const PARTICLE_COUNT = 45;
+  const CONNECTION_DIST = 140;
   const COLORS = ['0,255,200', '100,120,255', '180,80,255', '0,200,255'];
 
   let particles = [];
+  let bgRaf;
 
   function mkParticles() {
     particles = Array.from({ length: PARTICLE_COUNT }, () => ({
@@ -430,6 +432,11 @@ window.playAirIntro = function() {
   let scanSpeed = 0.55;
 
   function draw() {
+    // Pause BG canvas when not in Dev Mode
+    if (ModeManager.getCurrentMode() !== 'dev') {
+      bgRaf = requestAnimationFrame(draw);
+      return;
+    }
     ctx.clearRect(0, 0, W, H);
 
     // Scan line sweep
@@ -454,18 +461,9 @@ window.playAirIntro = function() {
       ctx.arc(p.x, p.y, p.r + glow * 0.8, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(${p.color},${0.5 + glow * 0.4})`;
       ctx.fill();
-
-      // Outer glow ring
-      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
-      grad.addColorStop(0, `rgba(${p.color},0.15)`);
-      grad.addColorStop(1, `rgba(${p.color},0)`);
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r * 6, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
     });
 
-    // Draw connections
+    // Draw connections — skip glow rings for perf
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const a = particles[i], b = particles[j];
@@ -483,14 +481,18 @@ window.playAirIntro = function() {
       }
     }
 
-    requestAnimationFrame(draw);
+    bgRaf = requestAnimationFrame(draw);
   }
 
   resize(); mkParticles(); draw();
   window.addEventListener('resize', () => { resize(); mkParticles(); });
 
-  // Repel particles from mouse
+  // Throttled mouse repel for performance
+  let lastMouseMove = 0;
   document.addEventListener('mousemove', e => {
+    const now = Date.now();
+    if (now - lastMouseMove < 50) return; // throttle to 20fps
+    lastMouseMove = now;
     particles.forEach(p => {
       const dx = p.x - e.clientX, dy = p.y - e.clientY;
       const dist = Math.sqrt(dx * dx + dy * dy);
@@ -878,6 +880,41 @@ ModeManager.init();
 document.querySelectorAll('#stab-home .s-reveal').forEach(el => airRevealObserver.observe(el));
 
 /* ══════════════════════════════════════════════════════
+   MOBILE VIEW TOGGLE
+   ══════════════════════════════════════════════════════ */
+(function initMobileView() {
+  const btn = document.getElementById('mobileViewToggle');
+  if (!btn) return;
+
+  const html = document.documentElement;
+  let isMobile = localStorage.getItem('jg-mobile-view') === 'true';
+
+  function applyMobile(on) {
+    isMobile = on;
+    html.classList.toggle('mobile-preview', on);
+    btn.classList.toggle('mv-active', on);
+    localStorage.setItem('jg-mobile-view', on);
+    // Hide on actual mobile screens (button is for desktop preview)
+    if (window.innerWidth <= 768) {
+      btn.style.display = 'none';
+    } else {
+      btn.style.display = '';
+    }
+  }
+
+  btn.addEventListener('click', () => applyMobile(!isMobile));
+  applyMobile(isMobile);
+  window.addEventListener('resize', () => {
+    if (window.innerWidth <= 768) {
+      btn.style.display = 'none';
+      if (isMobile) applyMobile(false);
+    } else {
+      btn.style.display = '';
+    }
+  });
+})();
+
+/* ══════════════════════════════════════════════════════
    GDG STORIES — Instagram-style cycling images
    ══════════════════════════════════════════════════════ */
 (function initGDGStories() {
@@ -992,7 +1029,7 @@ document.querySelectorAll('#stab-home .s-reveal').forEach(el => airRevealObserve
   canvas.height = h;
 
   const dots = [];
-  const DOT_COUNT = 800; // Increased density for map fidelity
+  const DOT_COUNT = 400; // Reduced from 800 for better performance
   const GLOBE_RADIUS = 500;
   
   // Lightweight 64x32 ASCII Earth Data Mask
@@ -1073,9 +1110,9 @@ document.querySelectorAll('#stab-home .s-reveal').forEach(el => airRevealObserve
       const distSq = (d1.x-d2.x)**2 + (d1.y-d2.y)**2 + (d1.z-d2.z)**2;
       dists.push({ dot: d2, distSq });
     }
-    // Connect to 3 nearest nodes to create the wireframe mesh
+    // Connect to 2 nearest nodes (reduced from 3 for perf)
     dists.sort((a,b) => a.distSq - b.distSq);
-    for(let k=0; k<3; k++) {
+    for(let k=0; k<2; k++) {
        if (dists[k]) d1.links.push(dists[k].dot);
     }
   }
@@ -1084,6 +1121,14 @@ document.querySelectorAll('#stab-home .s-reveal').forEach(el => airRevealObserve
   const rotationX = 0.3; // Slight tilt
   
   function draw() {
+    // Only render globe when contact tab is visible (performance)
+    const contactPanel = document.getElementById('tab-contact');
+    const isDevContactVisible = contactPanel && contactPanel.classList.contains('active');
+    const isDevMode = ModeManager.getCurrentMode() === 'dev';
+    if (!isDevMode || !isDevContactVisible) {
+      requestAnimationFrame(draw);
+      return;
+    }
     ctx.clearRect(0, 0, w, h);
     
     // Deep core glow
@@ -1689,12 +1734,29 @@ function renderAirPinned() {
 (function () {
   const roadmap = document.getElementById('spaceRoadmap');
   const beam    = document.getElementById('srmBeamFill');
-  if (!roadmap || !beam) return;
+  const beamContainer = roadmap ? roadmap.querySelector('.srm-beam') : null;
+  if (!roadmap || !beam || !beamContainer) return;
+
+  // Set the beam container height to end at the Earth destination (not bottom of roadmap)
+  function setBeamHeight() {
+    const dest = roadmap.querySelector('.srm-destination');
+    if (dest) {
+      const roadmapRect = roadmap.getBoundingClientRect();
+      const destRect = dest.getBoundingClientRect();
+      // Stop beam at the top of the Earth destination section
+      const beamH = destRect.top - roadmapRect.top;
+      beamContainer.style.height = beamH + 'px';
+      beamContainer.style.bottom = 'auto';
+    }
+  }
+  setBeamHeight();
+  window.addEventListener('resize', setBeamHeight);
 
   // Fill beam when roadmap enters view
   const beamIO = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
+        setBeamHeight();
         setTimeout(() => { beam.style.height = '100%'; }, 200);
         beamIO.unobserve(roadmap);
       }

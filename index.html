@@ -7,7 +7,7 @@
   <meta name="description" content="John Gil Mayor — IT Student at PUP, frontend developer, UI/UX designer, and systems builder."/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=Fira+Code:wght@400;500&family=Bebas+Neue&family=Anton&family=Titillium+Web:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=Fira+Code:wght@400;500&family=Bebas+Neue&family=Anton&family=Titillium+Web:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
@@ -156,6 +156,15 @@
 
     <!-- MODE TOGGLE -->
     <div class="mode-toggle-wrap">
+      <!-- Mobile View Toggle -->
+      <button class="mobile-view-btn" id="mobileViewToggle" aria-label="Toggle mobile view">
+        <svg class="mv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="7" y="2" width="10" height="20" rx="2" />
+          <line x1="12" y1="18" x2="12.01" y2="18" />
+        </svg>
+        <span class="mv-label">Mobile</span>
+      </button>
+      <!-- Air / Dev Mode Toggle -->
       <button class="mode-toggle tele-btn" id="modeToggle" aria-label="Switch portfolio mode">
         <img src="Images/Logos/rocket.gif" alt="Dev Mode" class="tele-icon icon-dev" style="width:44px;height:44px;object-fit:cover;border-radius:50%;" />
         <svg class="tele-icon icon-air" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
@@ -477,65 +486,6 @@
 
           <div class="toolkit-columns">
             <div class="toolkit-col-left">
-              <!-- ── Run Code Skills Analyzer (Python trick) ── -->
-              <div class="run-code-viewer reveal" id="runCodeViewer">
-            <!-- Toolbar -->
-            <div class="rca-toolbar">
-              <div class="rca-dots">
-                <span class="py-dot py-red"></span>
-                <span class="py-dot py-yellow"></span>
-                <span class="py-dot py-green"></span>
-              </div>
-              <span class="rca-filename">skills_analyzer.py</span>
-              <button class="rca-run-btn" id="runCodeBtn" aria-label="Run Python skills analyzer">
-                <svg class="rca-play-icon" viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><polygon points="5,3 19,12 5,21"/></svg>
-                <span id="runCodeLabel">Run Code</span>
-              </button>
-            </div>
-
-            <!-- Python source code (always visible) -->
-            <pre class="rca-code"><code><span class="py-comment"># skills_analyzer.py — John Gil Mayor</span>
-<span class="py-comment"># Proficiency Scanner · Portfolio v5.0</span>
-
-<span class="py-kw">import</span> time
-
-<span class="py-comment"># Define skill proficiency data</span>
-skills = {
-    <span class="py-str">"HTML"</span>:        <span class="py-num">90</span>,
-    <span class="py-str">"CSS"</span>:         <span class="py-num">80</span>,
-    <span class="py-str">"JavaScript"</span>:  <span class="py-num">70</span>,
-    <span class="py-str">"PHP"</span>:         <span class="py-num">80</span>,
-    <span class="py-str">"MySQL"</span>:       <span class="py-num">70</span>,
-    <span class="py-str">"C++"</span>:         <span class="py-num">30</span>,
-    <span class="py-str">"Python"</span>:      <span class="py-num">70</span>,
-}
-
-<span class="py-kw">def</span> <span class="py-builtin">analyze</span>(data):
-    <span class="py-builtin">print</span>(<span class="py-str">"→ Loading skill dataset..."</span>)
-    time.sleep(<span class="py-num">0.4</span>)
-    <span class="py-builtin">print</span>(<span class="py-str">f"→ Found {<span class='py-builtin'>len</span>(data)} languages."</span>)
-    time.sleep(<span class="py-num">0.3</span>)
-    <span class="py-builtin">print</span>(<span class="py-str">"→ Computing proficiency scores..."</span>)
-    time.sleep(<span class="py-num">0.5</span>)
-    <span class="py-kw">for</span> lang, score <span class="py-kw">in</span> data.items():
-        bar = <span class="py-str">"█"</span> * (score // <span class="py-num">10</span>) + <span class="py-str">"░"</span> * (<span class="py-num">10</span> - score // <span class="py-num">10</span>)
-        <span class="py-builtin">print</span>(<span class="py-str">f"  {lang:<span class='py-num'>12</span>} [{bar}] {score}%"</span>)
-    <span class="py-builtin">print</span>(<span class="py-str">"\n✅ Analysis complete! Rendering visuals..."</span>)
-
-analyze(skills)</code></pre>
-
-            <!-- Terminal output (injected by JS) -->
-            <div class="rca-terminal" id="rcaTerminal" hidden>
-              <div class="rca-term-bar">
-                <span>● Terminal</span>
-                <span class="rca-term-path">~/portfolio $ python skills_analyzer.py</span>
-              </div>
-              <div class="rca-term-body" id="rcaTermBody"></div>
-            </div>
-          </div>
-
-            </div> <!-- end toolkit-col-left -->
-            <div class="toolkit-col-right">
               <!-- Skills Grid — locked until Run Code fires -->
               <div class="skills-grid" id="skillsGrid" style="margin-top: 0;">
             <div class="skill-item skill-locked reveal">
@@ -595,6 +545,66 @@ analyze(skills)</code></pre>
               <div class="skill-track"><div class="skill-fill" data-width="70"></div></div>
             </div>
           </div>
+
+            </div> <!-- end toolkit-col-left -->
+            <div class="toolkit-col-right">
+              <!-- ── Run Code Skills Analyzer (Python trick) ── -->
+              <div class="run-code-viewer reveal" id="runCodeViewer">
+            <!-- Toolbar -->
+            <div class="rca-toolbar">
+              <div class="rca-dots">
+                <span class="py-dot py-red"></span>
+                <span class="py-dot py-yellow"></span>
+                <span class="py-dot py-green"></span>
+              </div>
+              <span class="rca-filename">skills_analyzer.py</span>
+              <button class="rca-run-btn rca-run-btn-pop" id="runCodeBtn" aria-label="Run Python skills analyzer">
+                <svg class="rca-play-icon" viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><polygon points="5,3 19,12 5,21"/></svg>
+                <span id="runCodeLabel">Run Code</span>
+              </button>
+            </div>
+
+            <!-- Python source code (always visible) -->
+            <pre class="rca-code"><code><span class="py-comment"># skills_analyzer.py — John Gil Mayor</span>
+<span class="py-comment"># Proficiency Scanner · Portfolio v5.0</span>
+
+<span class="py-kw">import</span> time
+
+<span class="py-comment"># Define skill proficiency data</span>
+skills = {
+    <span class="py-str">"HTML"</span>:        <span class="py-num">90</span>,
+    <span class="py-str">"CSS"</span>:         <span class="py-num">80</span>,
+    <span class="py-str">"JavaScript"</span>:  <span class="py-num">70</span>,
+    <span class="py-str">"PHP"</span>:         <span class="py-num">80</span>,
+    <span class="py-str">"MySQL"</span>:       <span class="py-num">70</span>,
+    <span class="py-str">"C++"</span>:         <span class="py-num">30</span>,
+    <span class="py-str">"Python"</span>:      <span class="py-num">70</span>,
+}
+
+<span class="py-kw">def</span> <span class="py-builtin">analyze</span>(data):
+    <span class="py-builtin">print</span>(<span class="py-str">"→ Loading skill dataset..."</span>)
+    time.sleep(<span class="py-num">0.4</span>)
+    <span class="py-builtin">print</span>(<span class="py-str">f"→ Found {<span class='py-builtin'>len</span>(data)} languages."</span>)
+    time.sleep(<span class="py-num">0.3</span>)
+    <span class="py-builtin">print</span>(<span class="py-str">"→ Computing proficiency scores..."</span>)
+    time.sleep(<span class="py-num">0.5</span>)
+    <span class="py-kw">for</span> lang, score <span class="py-kw">in</span> data.items():
+        bar = <span class="py-str">"█"</span> * (score // <span class="py-num">10</span>) + <span class="py-str">"░"</span> * (<span class="py-num">10</span> - score // <span class="py-num">10</span>)
+        <span class="py-builtin">print</span>(<span class="py-str">f"  {lang:<span class='py-num'>12</span>} [{bar}] {score}%"</span>)
+    <span class="py-builtin">print</span>(<span class="py-str">"\n✅ Analysis complete! Rendering visuals..."</span>)
+
+analyze(skills)</code></pre>
+
+            <!-- Terminal output (injected by JS) -->
+            <div class="rca-terminal" id="rcaTerminal" hidden>
+              <div class="rca-term-bar">
+                <span>● Terminal</span>
+                <span class="rca-term-path">~/portfolio $ python skills_analyzer.py</span>
+              </div>
+              <div class="rca-term-body" id="rcaTermBody"></div>
+            </div>
+          </div>
+
             </div> <!-- end toolkit-col-right -->
           </div> <!-- end toolkit-columns -->
 
@@ -613,6 +623,43 @@ analyze(skills)</code></pre>
             <div class="cisco-badge-sq img-placeholder" title="Cisco Badge 3 — Replace with your badge">
               <i class="fa-solid fa-certificate"></i>
               <span>Cisco Badge 3</span>
+            </div>
+          </div>
+
+          <!-- Certification Cards -->
+          <h3 class="subsection-title reveal" style="margin-top:28px">Certifications</h3>
+          <div class="cert-cards-grid reveal">
+            <div class="cert-card">
+              <div class="cert-card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <div class="cert-card-body">
+                <h4>Introduction to Cybersecurity</h4>
+                <p class="cert-card-issuer">Cisco Networking Academy</p>
+                <span class="cert-card-date">2024</span>
+              </div>
+            </div>
+            <div class="cert-card">
+              <div class="cert-card-icon"><i class="fa-solid fa-network-wired"></i></div>
+              <div class="cert-card-body">
+                <h4>Networking Basics</h4>
+                <p class="cert-card-issuer">Cisco Networking Academy</p>
+                <span class="cert-card-date">2024</span>
+              </div>
+            </div>
+            <div class="cert-card">
+              <div class="cert-card-icon"><i class="fa-solid fa-database"></i></div>
+              <div class="cert-card-body">
+                <h4>Data Analytics Essentials</h4>
+                <p class="cert-card-issuer">Cisco Networking Academy</p>
+                <span class="cert-card-date">2024</span>
+              </div>
+            </div>
+            <div class="cert-card">
+              <div class="cert-card-icon"><i class="fa-solid fa-laptop-code"></i></div>
+              <div class="cert-card-body">
+                <h4>IT Essentials</h4>
+                <p class="cert-card-issuer">Cisco Networking Academy</p>
+                <span class="cert-card-date">2023</span>
+              </div>
             </div>
           </div>
 
@@ -803,6 +850,41 @@ analyze(skills)</code></pre>
               </div>
             </div>
           </div>
+
+          <!-- Event 4: Build with AI and Notion -->
+          <div class="event-block reveal">
+            <div class="event-header">
+              <div class="event-icon">🤖</div>
+              <div>
+                <h3 class="event-title">Build with AI and Notion</h3>
+                <span class="event-date">Google Developer Groups</span>
+              </div>
+            </div>
+            <div class="event-photos">
+              <div class="event-photo-card">
+                <div class="event-photo img-placeholder" style="height:200px;border-radius:0;">
+                  <i class="fa-solid fa-robot"></i>
+                  <span>Build with AI and Notion — Photo 1</span>
+                </div>
+                <p class="event-photo-cap">Build with AI and Notion — Moment 1</p>
+              </div>
+              <div class="event-photo-card">
+                <div class="event-photo img-placeholder" style="height:200px;border-radius:0;">
+                  <i class="fa-solid fa-robot"></i>
+                  <span>Build with AI and Notion — Photo 2</span>
+                </div>
+                <p class="event-photo-cap">Build with AI and Notion — Moment 2</p>
+              </div>
+              <div class="event-photo-card">
+                <div class="event-photo img-placeholder" style="height:200px;border-radius:0;">
+                  <i class="fa-solid fa-robot"></i>
+                  <span>Build with AI and Notion — Photo 3</span>
+                </div>
+                <p class="event-photo-cap">Build with AI and Notion — Moment 3</p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -874,6 +956,7 @@ analyze(skills)</code></pre>
                 <img src="Images/Project Pictures/LAKbayGAbayPh (2).png" alt="LAKbayGAbayPh screenshot 2" class="proj-img-clickable" />
                 <img src="Images/Project Pictures/LAKbayGAbayPh (3).png" alt="LAKbayGAbayPh screenshot 3" class="proj-img-clickable" />
                 <img src="Images/Project Pictures/LAKbayGAbayPh (4).png" alt="LAKbayGAbayPh screenshot 4" class="proj-img-clickable" />
+              
               </div>
               <div class="proj-imgs-hint"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> tap image to expand</div>
               <div class="project-top">
@@ -895,6 +978,7 @@ analyze(skills)</code></pre>
                 <img src="Images/Project Pictures/OJT ATS (1).png" alt="OJT Tracker screenshot 2" class="proj-img-clickable" />
                 <img src="Images/Project Pictures/OJT ATS (2).png" alt="OJT Tracker screenshot 3" class="proj-img-clickable" />
                 <img src="Images/Project Pictures/OJT ATS (4).png" alt="OJT Tracker screenshot 4" class="proj-img-clickable" />
+                <img src="Images/Project Pictures/OJT ATS (5).png" alt="OJT Tracker screenshot 5" class="proj-img-clickable" />
               </div>
               <div class="proj-imgs-hint"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> tap image to expand</div>
               <div class="project-top">
@@ -943,13 +1027,27 @@ analyze(skills)</code></pre>
           <h2 class="section-title reveal">Let's Connect</h2>
           <p class="section-sub reveal">Open to internships, collaborations, and junior roles.</p>
           <div class="contact-grid">
-            <div class="contact-info tilt-card reveal">
+            <div class="contact-info contact-info-flat reveal">
               <h3>Reach me directly</h3>
               <p class="contact-desc">Feel free to reach out via email or connect on GitHub and LinkedIn.</p>
               <div class="contact-links">
                 <a href="mailto:jmayor.devhub@gmail.com" class="clink"><span class="clink-icon">✉️</span><div><span class="clink-label">Email</span><span class="clink-value">jmayor.devhub@gmail.com</span></div><span class="clink-arrow">↗</span></a>
+                <a href="tel:09692980415" class="clink"><span class="clink-icon">📱</span><div><span class="clink-label">Phone</span><span class="clink-value">09692980415</span></div><span class="clink-arrow">↗</span></a>
+                <div class="clink clink-static"><span class="clink-icon">📍</span><div><span class="clink-label">Location</span><span class="clink-value">Paranaque City, Metro Manila, Philippines</span></div></div>
                 <a href="https://github.com/JGIL-22" target="_blank" rel="noopener" class="clink"><span class="clink-icon">🐙</span><div><span class="clink-label">GitHub</span><span class="clink-value">github.com/JGIL-22</span></div><span class="clink-arrow">↗</span></a>
                 <a href="https://www.linkedin.com/in/johngil-mayor22/" target="_blank" rel="noopener" class="clink"><span class="clink-icon">💼</span><div><span class="clink-label">LinkedIn</span><span class="clink-value">linkedin.com/in/johngil-mayor22/</span></div><span class="clink-arrow">↗</span></a>
+                <a href="file sources/Mayor_JohnGil - Resume (ATS).pdf" download="Mayor_JohnGil - Resume (ATS).pdf" class="dev-resume-btn" aria-label="Download Resume">
+                  <span class="dev-resume-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                  </span>
+                  <span class="dev-resume-label">Download Resume</span>
+                  <span class="dev-resume-filename">Mayor_JohnGil - Resume (ATS).pdf</span>
+                  <span class="dev-resume-shine"></span>
+                </a>
               </div>
             </div>
             <form class="contact-form tilt-card reveal reveal-delay" id="devContactForm" novalidate>
@@ -993,6 +1091,9 @@ analyze(skills)</code></pre>
           <a href="https://github.com/JGIL-22" target="_blank" rel="noopener" class="social-link" aria-label="GitHub">
             <i class="fa-brands fa-github"></i>
           </a>
+          <a href="https://gdgpup.org/sparkmates/me" target="_blank" rel="noopener" class="social-link" aria-label="Google Developer Groups">
+            <img src="Images/Logos/GDG Logo.png" alt="GDG PUP" class="footer-icon" />
+          </a>
         </div>
         <div class="footer-address">
           <i class="fa-solid fa-location-dot"></i>
@@ -1033,11 +1134,10 @@ analyze(skills)</code></pre>
               <div class="s-hero-text">
                 <p class="s-eyebrow s-reveal">Bachelor of Science in Information Technology</p>
                 <h1 class="s-name s-reveal">John Gil Mayor</h1>
-                <p class="s-tagline s-reveal">Full-Stack Dev &nbsp;·&nbsp; UI/UX &nbsp;·&nbsp; Cybersecurity &nbsp;·&nbsp; Blockchain &nbsp;·&nbsp; Cloud</p>
                 <p class="s-intro s-reveal">
-                  A graduating IT student from the Polytechnic University of the Philippines with hands-on experience
+                  A graduating IT student from the Polytechnic University of the Philippines Paranaque with hands-on experience
                   building civic tech platforms, UI dashboards, and academic systems. Eager to contribute
-                  to a team as a junior developer or intern.
+                  to a team as a junior developer or entry-level positions.
                 </p>
                 <div class="s-hero-actions s-reveal">
                   <button class="s-btn-primary" data-stab="works">View Projects</button>
@@ -1046,15 +1146,16 @@ analyze(skills)</code></pre>
               </div>
               <div class="s-hero-card s-reveal">
                 <div class="s-avatar">
-                  <img src="Images/extracted_img_e4da1584.png" alt="John Gil Mayor" class="s-id-photo" style="width:100%;height:100%;object-fit:cover;object-position:top;border-radius:50%;" />
+                  <img src="Images/Photo Gallery/photo_2026-05-07_17-52-48.jpg" alt="John Gil Mayor" class="s-id-photo" />
                 </div>
                 <h3>John Gil Mayor</h3>
-                <p>BSIT · PUP · Class of 2026</p>
+                <p class="s-card-role">BSIT · PUP · Class of 2026</p>
+                <p class="s-card-tagline">Full-Stack Development · UI/UX · Cybersecurity · Cloud</p>
                 <div class="s-divider"></div>
                 <div class="s-card-stats">
                   <div class="s-cs"><strong>10+</strong><span>Certificates</span></div>
-                  <div class="s-cs"><strong>5+</strong><span>IT Events joined</span></div>
-                  <div class="s-cs"><strong>3+</strong><span>Projects</span></div>
+                  <div class="s-cs"><strong>3+</strong><span>Bootcamps/Hackathons</span></div>
+                  <div class="s-cs"><strong>5+</strong><span>Projects</span></div>
                 </div>
               </div>
             </div>
@@ -1084,8 +1185,8 @@ analyze(skills)</code></pre>
                 <p>
                   I am a final-year BSIT student at PUP with a strong foundation in frontend development,
                   UI/UX design, and software systems. Throughout my academic journey, I have built
-                  production-quality web applications — most notably a barangay digital services platform
-                  and a government ID validation system.
+                  production-quality web applications, most notably a barangay digital services platform
+                  and a travel tracker application.
                 </p>
                 <p>
                   I am driven by a genuine interest in creating digital tools that solve real problems
@@ -1093,15 +1194,15 @@ analyze(skills)</code></pre>
                   collaborating across disciplines.
                 </p>
                 <p>
-                  I am currently seeking an <strong>internship or entry-level role</strong> in software development,
+                  I am currently seeking an <strong>entry-level role</strong> in software development,
                   frontend engineering, or quality assurance at a company where I can grow and contribute meaningfully.
                 </p>
               </div>
               <div class="s-about-aside s-reveal">
                 <div class="s-info-block">
-                  <div class="s-info-row"><span class="s-info-label">Degree</span><span>BSIT — Graduating 2026</span></div>
+                  <div class="s-info-row"><span class="s-info-label">Degree</span><span>BSIT — Batch 2026</span></div>
                   <div class="s-info-row"><span class="s-info-label">School</span><span>Polytechnic University of the Philippines</span></div>
-                  <div class="s-info-row"><span class="s-info-label">Focus</span><span>Full-Stack Development, UI/UX Designing, Cybersecurity, BlockChain Technology</span></div>
+                  <div class="s-info-row"><span class="s-info-label">Focus</span><span>Full-Stack Development, UI/UX Designing, Cybersecurity, Cloud Technology</span></div>
                   <div class="s-info-row"><span class="s-info-label">Location</span><span>Paranaque City, Metro Manila, Philippines</span></div>
                   <div class="s-info-row"><span class="s-info-label">Status</span><span class="s-available">Open to Opportunities</span></div>
                 </div>
@@ -1128,7 +1229,8 @@ analyze(skills)</code></pre>
                 <div class="s-corp-chips">
                   <span>Frontend Dev</span>
                   <span>UI/UX Design</span>
-                  <span>Systems</span>
+                  <span>Cybersecurity</span>
+                  <span>Cloud Technology</span>
                 </div>
               </div>
             </div>
@@ -1385,6 +1487,7 @@ analyze(skills)</code></pre>
                   <img src="Images/Project Pictures/LAKbayGAbayPh (2).png" alt="LAKbayGAbayPh screenshot 2" class="proj-img-clickable" />
                   <img src="Images/Project Pictures/LAKbayGAbayPh (3).png" alt="LAKbayGAbayPh screenshot 3" class="proj-img-clickable" />
                   <img src="Images/Project Pictures/LAKbayGAbayPh (4).png" alt="LAKbayGAbayPh screenshot 4" class="proj-img-clickable" />
+                  <img src="Images/Project Pictures/LAKbayGAbayPh (5).png" alt="LAKbayGAbayPh screenshot 5" class="proj-img-clickable" />
                 </div>
                 <div class="proj-imgs-hint"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> tap image to expand</div>
                 <div class="s-project-header">
@@ -1492,6 +1595,9 @@ analyze(skills)</code></pre>
                   <span class="s-contact-label">LinkedIn</span>
                   <a href="https://www.linkedin.com/in/johngil-mayor22/" target="_blank" rel="noopener" class="s-contact-val">linkedin.com/in/johngil-mayor22/</a>
                 </div>
+                <div class="s-contact-row" style="margin-top: 16px; border-bottom: none;">
+                  <a href="file sources/Mayor_JohnGil - Resume (ATS).pdf" target="_blank" download class="s-btn-primary full" style="justify-content: center; width: 100%; text-decoration: none;">Download Resume</a>
+                </div>
               </div>
               <form class="s-form s-reveal" id="simpleContactForm" novalidate>
                 <div class="s-form-row">
@@ -1536,6 +1642,9 @@ analyze(skills)</code></pre>
             </a>
             <a href="https://github.com/JGIL-22" target="_blank" rel="noopener" class="s-social-link" aria-label="GitHub">
               <i class="fa-brands fa-github"></i>
+            </a>
+            <a href="https://gdgpup.org/sparkmates/me" target="_blank" rel="noopener" class="s-social-link" aria-label="Google Developer Groups">
+              <img src="Images/Logos/GDG Logo.png" alt="GDG PUP" class="footer-icon" />
             </a>
           </div>
           <div class="s-footer-address">
