@@ -886,7 +886,7 @@ body.cursor-click #cursorRing { width: 24px; height: 24px; background: rgba(109,
 /* ══════════════════════════════════════════════════
    WORKS (Dev)
    ══════════════════════════════════════════════════ */
-.projects-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 36px; }
+.projects-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-top: 36px; }
 .project-card { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; overflow: hidden; transition: transform .3s var(--ease), border-color .3s ease, background .3s ease; cursor: pointer; }
 .project-card:hover { transform: translateY(-10px); border-color: var(--border2); background: var(--surface2); }
 .project-card.featured { grid-column: 1/-1; background: linear-gradient(160deg,rgba(109,40,217,.12),rgba(14,165,233,.06)); border-color: rgba(109,40,217,.3); }
@@ -2205,24 +2205,26 @@ a.s-contact-val:hover { color: #3d5a8a; }
 /* DEV MODE — Image Strip */
 .proj-imgs-strip {
   display: flex;
-  gap: 6px;
   margin-bottom: 14px;
   border-radius: 8px;
   overflow: hidden;
-  height: 110px;
+  height: 200px;
 }
 .proj-imgs-strip img {
-  flex: 1;
-  width: 0;
+  display: none;
+}
+.proj-imgs-strip img:first-child {
+  display: block;
+  width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 6px;
-  transition: flex 0.4s cubic-bezier(.25,.8,.25,1), filter 0.3s;
-  filter: brightness(0.85) saturate(0.8);
+  transition: filter 0.3s, transform 0.3s cubic-bezier(.34,1.56,.64,1);
+  filter: brightness(0.9) saturate(0.9);
 }
-.proj-imgs-strip img:hover {
-  flex: 2.2;
+.proj-imgs-strip:hover img:first-child {
   filter: brightness(1) saturate(1.1);
+  transform: scale(1.05);
 }
 
 /* Dev project subtitle */
