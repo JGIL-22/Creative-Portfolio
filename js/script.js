@@ -78,19 +78,43 @@ function updateDrawerLinks(mode) {
   const container = document.getElementById('drawerLinks');
   if (!container) return;
 
+  // SVG icon helpers
+  const icons = {
+    home: `<svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>`,
+    about: `<svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`,
+    events: `<svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+    works: `<svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
+    contact: `<svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`,
+  };
+
+  const socials = `
+    <div class="drawer-socials">
+      <a href="https://www.facebook.com/JgTrek/" target="_blank" rel="noopener" class="drawer-social-link" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+      </a>
+      <a href="https://www.instagram.com/jm_voyor/" target="_blank" rel="noopener" class="drawer-social-link" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/john-myr22/" target="_blank" rel="noopener" class="drawer-social-link" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      </a>
+    </div>`;
+
   if (mode === 'dev') {
     container.innerHTML = `
-      <button class="drawer-link" data-tab="home"    data-close>Home</button>
-      <button class="drawer-link" data-tab="about"   data-close>About</button>
-      <button class="drawer-link" data-tab="events"  data-close>Events</button>
-      <button class="drawer-link" data-tab="works"   data-close>Works</button>
-      <button class="drawer-link btn-drawer" data-tab="contact" data-close>Contact</button>`;
+      <button class="drawer-link" data-tab="home"    data-close>${icons.home}Home</button>
+      <button class="drawer-link" data-tab="about"   data-close>${icons.about}About</button>
+      <button class="drawer-link" data-tab="events"  data-close>${icons.events}Events</button>
+      <button class="drawer-link" data-tab="works"   data-close>${icons.works}Works</button>
+      <button class="drawer-link btn-drawer" data-tab="contact" data-close>${icons.contact}Get in Touch</button>
+      ${socials}`;
   } else {
     container.innerHTML = `
-      <button class="drawer-link" data-stab="home"    data-close>Home</button>
-      <button class="drawer-link" data-stab="about"   data-close>About</button>
-      <button class="drawer-link" data-stab="works"   data-close>Works</button>
-      <button class="drawer-link btn-drawer" data-stab="contact" data-close>Contact</button>`;
+      <button class="drawer-link" data-stab="home"    data-close>${icons.home}Home</button>
+      <button class="drawer-link" data-stab="about"   data-close>${icons.about}About</button>
+      <button class="drawer-link" data-stab="works"   data-close>${icons.works}Works</button>
+      <button class="drawer-link btn-drawer" data-stab="contact" data-close>${icons.contact}Get in Touch</button>
+      ${socials}`;
   }
 }
 
@@ -596,7 +620,8 @@ document.addEventListener('click', e => {
     drawer.classList.add('open'); overlay.classList.add('open');
     overlay.removeAttribute('aria-hidden');
     hamburger.classList.add('open'); hamburger.setAttribute('aria-expanded','true');
-    document.body.style.overflow = 'hidden';
+    // Don't lock scroll for dropdown-style drawer
+    // document.body.style.overflow = 'hidden';
   }
   function close() {
     drawer.classList.remove('open'); overlay.classList.remove('open');
@@ -1408,19 +1433,23 @@ document.querySelectorAll('#stab-home .s-reveal').forEach(el => airRevealObserve
 
 // Data maps for pinned cards
 const devProjectData = {
-  clickizenship: { title: 'CLICKizenship', sub: 'Barangay DigiServices Request System', img: 'Images/extracted_img_36262acd.jpg' },
-  glidego:       { title: "GlideN'Go",     sub: 'Professional Fleet & Cold-Chain Logistics', img: 'Images/extracted_img_4b6640c8.jpg' },
-  lakbay:        { title: 'LAKbayGAbayPh', sub: 'Traversing Project 82 — MapaSayo Generator', img: 'Images/extracted_img_b19133fc.jpg' },
-  ojt:           { title: 'OJT Attendance Tracker', sub: 'OJT Attendance Tracker System', img: 'Images/extracted_img_d09ce5f1.jpg' },
-  passfolio:     { title: 'Passfolio in One', sub: 'Passport-Style Portfolio', img: 'Images/extracted_img_e88f74c7.jpg' }
+  clickizenship: { title: 'CLICKizenship', sub: 'Barangay DigiServices Request System', img: 'Images/Project Pictures/CLICKizenship  (3).png' },
+  glidego:       { title: "GlideN'Go",     sub: 'Professional Fleet & Cold-Chain Logistics', img: 'Images/Project Pictures/GlideNGo (1).png' },
+  lakbay:        { title: 'LAKbayGAbayPh', sub: 'Traversing Project 82 — MapaSayo Generator', img: 'Images/Project Pictures/LAKbayGAbayPh (1).png' },
+  ojt:           { title: 'OJT Attendance Tracker', sub: 'OJT Attendance Tracker System', img: 'Images/Project Pictures/OJT ATS (3).png' },
+  passfolio:     { title: 'Passfolio in One', sub: 'Passport-Style Portfolio', img: 'Images/Project Pictures/PassFolio (1).png' },
+  gastadoor:     { title: 'GastaDoor', sub: 'Budget Manager App in your Home', img: 'Images/Project Pictures/GastaDoor (1).jpg' },
+  bugtong2x:     { title: 'Bugtong2x', sub: 'Classic Filipino Riddle Game', img: 'Images/Project Pictures/Bugtong (1).png' }
 };
 
 const airProjectData = {
-  clickizenship: { title: 'CLICKizenship', sub: 'Barangay DigiServices Request System', img: 'Images/extracted_img_36262acd.jpg' },
-  glidego:       { title: "GlideN'Go",     sub: 'Professional Fleet & Cold-Chain Logistics', img: 'Images/extracted_img_4b6640c8.jpg' },
-  lakbay:        { title: 'LAKbayGAbayPh', sub: 'Traversing Project 82 — MapaSayo Generator', img: 'Images/extracted_img_b19133fc.jpg' },
-  ojt:           { title: 'OJT Attendance Tracker', sub: 'OJT Attendance Tracker System', img: 'Images/extracted_img_d09ce5f1.jpg' },
-  passfolio:     { title: 'Passfolio in One', sub: 'Passport-Style Portfolio', img: 'Images/extracted_img_e88f74c7.jpg' }
+  clickizenship: { title: 'CLICKizenship', sub: 'Barangay DigiServices Request System', img: 'Images/Project Pictures/CLICKizenship  (3).png' },
+  glidego:       { title: "GlideN'Go",     sub: 'Professional Fleet & Cold-Chain Logistics', img: 'Images/Project Pictures/GlideNGo (1).png' },
+  lakbay:        { title: 'LAKbayGAbayPh', sub: 'Traversing Project 82 — MapaSayo Generator', img: 'Images/Project Pictures/LAKbayGAbayPh (1).png' },
+  ojt:           { title: '[AT]tendee Management Portal', sub: 'Attendance Tracking System', img: 'Images/Project Pictures/OJT ATS (3).png' },
+  passfolio:     { title: 'PassFolio One', sub: 'Password Portfolio System', img: 'Images/Project Pictures/PassFolio (1).png' },
+  GastaDoor:     { title: 'GastaDoor', sub: 'Budget Manager App in your Home', img: 'Images/Project Pictures/GastaDoor (1).jpg' },
+  bugtong2x:     { title: 'Bugtong2x', sub: 'Classic Filipino Riddle Game', img: 'Images/Project Pictures/Bugtong (1).png' }
 };
 
 // Shared state
@@ -1467,14 +1496,22 @@ function renderDevPinned() {
     if (!d) return;
     const item = document.createElement('div');
     item.className = 'dev-pinned-item';
+    item.style.cursor = 'pointer';
     item.innerHTML = `
       <img class="dev-pinned-thumb" src="${d.img}" alt="${d.title}" />
       <div class="dev-pinned-info">
         <h4>${d.title}</h4>
         <span>${d.sub}</span>
       </div>
-      <button class="dev-pinned-unpin" title="Unpin" onclick="unpinDev('${pid}')">✕</button>
+      <button class="dev-pinned-unpin" title="Unpin" onclick="event.stopPropagation(); unpinDev('${pid}')">✕</button>
     `;
+    item.addEventListener('click', () => {
+      const card = document.querySelector(`.dev-proj-card[data-pid="${pid}"]`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => card.click(), 400);
+      }
+    });
     list.appendChild(item);
   });
 }
@@ -1518,14 +1555,22 @@ function renderAirPinned() {
     if (!d) return;
     const item = document.createElement('div');
     item.className = 'air-pinned-item';
+    item.style.cursor = 'pointer';
     item.innerHTML = `
       <img class="air-pinned-thumb" src="${d.img}" alt="${d.title}" />
       <div class="air-pinned-info">
         <h4>${d.title}</h4>
         <span>${d.sub}</span>
       </div>
-      <button class="air-pinned-unpin" title="Unpin" onclick="unpinAir('${pid}')">✕</button>
+      <button class="air-pinned-unpin" title="Unpin" onclick="event.stopPropagation(); unpinAir('${pid}')">✕</button>
     `;
+    item.addEventListener('click', () => {
+      const card = document.querySelector(`.s-proj-card[data-spid="${pid}"]`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => card.click(), 400);
+      }
+    });
     list.appendChild(item);
   });
 }
