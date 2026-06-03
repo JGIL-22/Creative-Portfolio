@@ -126,7 +126,7 @@ const ModeManager = (() => {
   const curtain    = document.getElementById('modeCurtain');
   const modeToggle = document.getElementById('modeToggle');
 
-  let currentMode = localStorage.getItem('jg-mode') || 'dev';
+  let currentMode = localStorage.getItem('jg-mode') || 'air';
   if (currentMode === 'simple') {
     currentMode = 'air';
     localStorage.setItem('jg-mode', 'air');
@@ -399,8 +399,12 @@ window.playDevIntro = function() {
 if(ModeManager.getCurrentMode() === 'dev') {
   window.playDevIntro();
 } else {
+  // Air Mode is default — hide dev intro, play air intro
   const intro = document.getElementById('intro');
   if (intro) { intro.style.display = 'none'; intro.classList.add('hide'); }
+  if (typeof window.playAirIntro === 'function') {
+    window.playAirIntro();
+  }
 }
 
 /* ══════════════════════════════════════════════════════

@@ -4736,3 +4736,90 @@ html.mobile-preview .s-name {
 .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   JGM FIXES — June 2026 (v4)
+   1. Air Mode hero: name centered + larger on mobile
+   2. Eyebrow (BSIT) one line on mobile
+   3. Drawer dual hint text (rocket vs windmill)
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Dual mode hints: show only the right one ── */
+.drawer-hint-dev,
+.drawer-hint-air { margin: 6px 0 0; font-size: 11px; font-style: italic; line-height: 1.4; }
+[data-mode="dev"] .drawer-hint-dev  { display: block; }
+[data-mode="dev"] .drawer-hint-air  { display: none;  }
+[data-mode="air"] .drawer-hint-air  { display: block; }
+[data-mode="air"] .drawer-hint-dev  { display: none;  }
+[data-mode="dev"] .drawer-hint-dev  { color: rgba(255,255,255,0.32); }
+[data-mode="air"] .drawer-hint-air  { color: rgba(10,25,60,0.38); }
+
+/* Hide the generic single hint if it still exists */
+.drawer-mode-hint:not(.drawer-hint-dev):not(.drawer-hint-air) { display: none !important; }
+
+/* ── Air Mode mobile: center name + larger size ── */
+@media (max-width: 720px) {
+  .s-hero-text {
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .s-name {
+    font-size: clamp(36px, 11vw, 60px) !important;
+    white-space: normal !important;
+    text-align: center !important;
+    line-height: 1.15 !important;
+    margin-bottom: 14px !important;
+  }
+  .s-eyebrow {
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    letter-spacing: 0.07em !important;
+  }
+  .s-intro {
+    text-align: center !important;
+    font-size: 14px !important;
+    max-width: 100% !important;
+  }
+  .s-hero-actions {
+    justify-content: center !important;
+  }
+}
+@media (max-width: 480px) {
+  .s-name {
+    font-size: clamp(32px, 12vw, 52px) !important;
+  }
+  .s-eyebrow {
+    font-size: 10px !important;
+    letter-spacing: 0.05em !important;
+  }
+}
+html.mobile-preview .s-hero-text {
+  text-align: center !important;
+  align-items: center !important;
+}
+html.mobile-preview .s-name {
+  font-size: clamp(34px, 10vw, 54px) !important;
+  text-align: center !important;
+  line-height: 1.15 !important;
+}
+html.mobile-preview .s-eyebrow {
+  font-size: 11px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  text-align: center !important;
+  letter-spacing: 0.06em !important;
+}
+html.mobile-preview .s-intro {
+  text-align: center !important;
+}
+html.mobile-preview .s-hero-actions {
+  justify-content: center !important;
+}
