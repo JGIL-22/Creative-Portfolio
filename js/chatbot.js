@@ -58,8 +58,8 @@
     },
 
     skills: {
-      en: "Here's John Gil's tech stack! 💻\n\n**Languages & Markup:**\n🌐 HTML/CSS — 90% · Advanced layouts & animations\n⚡ JavaScript — 80% · DOM, APIs, logic\n🐍 Python — 75% · Data, scripting, Flask\n🗄️ MySQL — 70% · Database design & queries\n\n**Design & Tools:**\n🎨 UI/UX Design (Figma) — 78%\n🔒 Cybersecurity Basics — 65%\n🔗 REST APIs · Git/GitHub · Agile/Scrum\n\nHe builds things that look great AND work well! ✨",
-      fil: "Ito ang tech stack ni John Gil! 💻\n\n**Languages & Markup:**\n🌐 HTML/CSS — 90% · Advanced layouts at animations\n⚡ JavaScript — 80% · DOM, APIs, logic\n🐍 Python — 75% · Data, scripting, Flask\n🗄️ MySQL — 70% · Database design at queries\n\n**Design at Tools:**\n🎨 UI/UX Design (Figma) — 78%\n🔒 Cybersecurity Basics — 65%\n🔗 REST APIs · Git/GitHub · Agile/Scrum\n\nGumagawa siya ng mga bagay na maganda at gumagana rin! ✨"
+      en: "Here's John Gil's tech stack! 💻\n\n**Languages & Markup:**\n🌐 HTML/CSS — 90% · Advanced layouts & animations\n⚡ JavaScript/TypeScript — 80% · DOM, APIs, logic\n🐍 Python — 75% · Data, scripting, Flask\n🗄️ MySQL/SupaBase — 70% · Database design & queries\n\n**Frameworks & Tools:**\n⚙️ Node.js, Express, Vite, Angular\n🎨 UI/UX Design (Figma) — 78%\n🔒 Cybersecurity Basics — 65%\n🔗 REST APIs · Git/GitHub · Agile/Scrum\n\nHe builds things that look great AND work well! ✨",
+      fil: "Ito ang tech stack ni John Gil! 💻\n\n**Languages & Markup:**\n🌐 HTML/CSS — 90% · Advanced layouts at animations\n⚡ JavaScript/TypeScript — 80% · DOM, APIs, logic\n🐍 Python — 75% · Data, scripting, Flask\n🗄️ MySQL/SupaBase — 70% · Database design at queries\n\n**Frameworks & Tools:**\n⚙️ Node.js, Express, Vite, Angular\n🎨 UI/UX Design (Figma) — 78%\n🔒 Cybersecurity Basics — 65%\n🔗 REST APIs · Git/GitHub · Agile/Scrum\n\nGumagawa siya ng mga bagay na maganda at gumagana rin! ✨"
     },
 
     projects: {

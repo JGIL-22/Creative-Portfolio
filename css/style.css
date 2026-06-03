@@ -381,13 +381,13 @@ body.cursor-click #cursorRing { width: 24px; height: 24px; background: rgba(109,
 /* Avatar */
 .jv-avatar-wrap {
   position: relative;
-  width: 38px;
-  height: 38px;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
 }
 .jv-avatar {
-  width: 38px;
-  height: 38px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
   object-position: top center;
@@ -426,7 +426,7 @@ body.cursor-click #cursorRing { width: 24px; height: 24px; background: rgba(109,
   display: flex;
   align-items: baseline;
   font-family: 'Outfit', sans-serif;
-  font-size: 40px;
+  font-size: 48px;
   font-weight: 800;
   letter-spacing: -0.025em;
   line-height: 1;
@@ -785,6 +785,7 @@ body.cursor-click #cursorRing { width: 24px; height: 24px; background: rgba(109,
    SKILLS SECTION (Dev Mode)
    ══════════════════════════════════════════════════ */
 .toolkit-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+.toolkit-col-left, .toolkit-col-right { min-width: 0; }
 @media (max-width: 900px) { .toolkit-columns { grid-template-columns: 1fr; } }
 .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; margin-bottom: 28px; }
 .skill-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rsm); padding: 18px 20px; transition: border-color .25s ease, background .25s ease, transform .25s ease, opacity .4s ease; }
@@ -1019,7 +1020,7 @@ input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.6); }
 .s-hero-section { background: #eceae4; padding: 0; }
 .s-hero { min-height: calc(100vh - var(--nav-h)); display: grid; grid-template-columns: 1.2fr .8fr; gap: 50px; align-items: center; padding: 60px 0; }
 .s-eyebrow { font-size: 15px; font-weight: 600; letter-spacing: .10em; text-transform: uppercase; color: #3d5a8a; margin-bottom: 10px; }
-.s-name { font-family: 'Lora', serif; font-size: 80px; font-weight: 800; color: #192b56; line-height: 1.50; letter-spacing: -.02em; margin-bottom: 15px; }
+.s-name { font-family: 'Lora', serif; font-size: 70px; font-weight: 600; color: #192b56; line-height: 1.50; letter-spacing: -.02em; margin-bottom: 15px; }
 .s-tagline { font-size: 12px; color: #3d5280; font-weight: 500; margin-bottom: 22px; }
 .s-intro { font-size: 15px; line-height: 1.75; color: #4a5570; max-width: 520px; margin-bottom: 32px; }
 .s-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }

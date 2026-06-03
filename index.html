@@ -173,35 +173,38 @@
       <button class="snav-tab snav-cta" data-stab="contact">Contact</button>
     </nav>
 
-    <!-- MODE TOGGLE -->
-    <div class="mode-toggle-wrap">
-      <!-- Mobile View Toggle -->
-      <button class="mobile-view-btn" id="mobileViewToggle" aria-label="Toggle mobile view">
-        <svg class="mv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="7" y="2" width="10" height="20" rx="2" />
-          <line x1="12" y1="18" x2="12.01" y2="18" />
-        </svg>
-        <span class="mv-label">Mobile</span>
-      </button>
-      <!-- Air / Dev Mode Toggle -->
-      <button class="mode-toggle tele-btn" id="modeToggle" aria-label="Switch portfolio mode">
-        <img src="Images/Logos/rocket.gif" alt="Dev Mode" class="tele-icon icon-dev" style="width:44px;height:44px;object-fit:cover;border-radius:50%;" />
-        <svg class="tele-icon icon-air" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="10" x2="12" y2="22" stroke-width="1.5" />
-          <g class="windmill-spin">
-            <path d="M12 10 L12 2 L16 6 Z" />
-            <path d="M12 10 L20 10 L16 14 Z" />
-            <path d="M12 10 L12 18 L8 14 Z" />
-            <path d="M12 10 L4 10 L8 6 Z" />
-            <circle cx="12" cy="10" r="1.5" fill="currentColor" />
-          </g>
-        </svg>
+    <!-- NAV ACTIONS (Mode Toggle + Hamburger) -->
+    <div class="nav-actions" style="display: flex; align-items: center; gap: 16px;">
+      <!-- MODE TOGGLE -->
+      <div class="mode-toggle-wrap">
+        <!-- Mobile View Toggle -->
+        <button class="mobile-view-btn" id="mobileViewToggle" aria-label="Toggle mobile view">
+          <svg class="mv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="7" y="2" width="10" height="20" rx="2" />
+            <line x1="12" y1="18" x2="12.01" y2="18" />
+          </svg>
+          <span class="mv-label">Mobile</span>
+        </button>
+        <!-- Air / Dev Mode Toggle -->
+        <button class="mode-toggle tele-btn" id="modeToggle" aria-label="Switch portfolio mode">
+          <img src="Images/Logos/rocket.gif" alt="Dev Mode" class="tele-icon icon-dev" style="width:44px;height:44px;object-fit:cover;border-radius:50%;" />
+          <svg class="tele-icon icon-air" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="10" x2="12" y2="22" stroke-width="1.5" />
+            <g class="windmill-spin">
+              <path d="M12 10 L12 2 L16 6 Z" />
+              <path d="M12 10 L20 10 L16 14 Z" />
+              <path d="M12 10 L12 18 L8 14 Z" />
+              <path d="M12 10 L4 10 L8 6 Z" />
+              <circle cx="12" cy="10" r="1.5" fill="currentColor" />
+            </g>
+          </svg>
+        </button>
+      </div>
+
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
       </button>
     </div>
-
-    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
   </header>
 
   <!-- ═══════════════════════════════════════
@@ -775,6 +778,30 @@ analyze(skills)</code></pre>
                 <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/netlify/netlify-original.svg" width="22" height="22" alt="Netlify" /></div>
                 <span>Netlify</span>
               </div>
+              <div class="org-item">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="22" height="22" alt="TypeScript" /></div>
+                <span>TypeScript</span>
+              </div>
+              <div class="org-item">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="22" height="22" alt="Node.js" /></div>
+                <span>Node.js</span>
+              </div>
+              <div class="org-item">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/vite.svg" width="22" height="22" alt="Vite" /></div>
+                <span>Vite</span>
+              </div>
+              <div class="org-item">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/angular.svg" width="22" height="22" alt="Angular" /></div>
+                <span>Angular</span>
+              </div>
+              <div class="org-item">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" width="22" height="22" alt="Express" /></div>
+                <span>Express</span>
+              </div>
+              <div class="org-item">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/supabase.svg" width="22" height="22" alt="SupaBase" /></div>
+                <span>SupaBase</span>
+              </div>
               <!-- Duplicates for infinite loop -->
               <div class="org-item" aria-hidden="true">
                 <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="22" height="22" alt="" /></div>
@@ -831,6 +858,30 @@ analyze(skills)</code></pre>
               <div class="org-item" aria-hidden="true">
                 <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/netlify/netlify-original.svg" width="22" height="22" alt="" /></div>
                 <span>Netlify</span>
+              </div>
+              <div class="org-item" aria-hidden="true">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="22" height="22" alt="" /></div>
+                <span>TypeScript</span>
+              </div>
+              <div class="org-item" aria-hidden="true">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="22" height="22" alt="" /></div>
+                <span>Node.js</span>
+              </div>
+              <div class="org-item" aria-hidden="true">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/vite.svg" width="22" height="22" alt="" /></div>
+                <span>Vite</span>
+              </div>
+              <div class="org-item" aria-hidden="true">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/angular.svg" width="22" height="22" alt="" /></div>
+                <span>Angular</span>
+              </div>
+              <div class="org-item" aria-hidden="true">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" width="22" height="22" alt="" /></div>
+                <span>Express</span>
+              </div>
+              <div class="org-item" aria-hidden="true">
+                <div class="org-logo"><img src="https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/supabase.svg" width="22" height="22" alt="" /></div>
+                <span>SupaBase</span>
               </div>
             </div>
           </div>
@@ -999,9 +1050,12 @@ analyze(skills)</code></pre>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17.3l-6.2 4L8.2 13.9 2 9.4h7.6z"/></svg>
               </button>
               <div class="proj-imgs-strip">
-                <img src="Images/Project Pictures/GlideN'Go (1).png" alt="GlideN'Go screenshot 1" class="proj-img-clickable" />
-                <img src="Images/Project Pictures/GlideN'Go (2).png" alt="GlideN'Go screenshot 2" class="proj-img-clickable" />
-                <img src="Images/Project Pictures/GlideN'Go (3).png" alt="GlideN'Go screenshot 3" class="proj-img-clickable" />
+                <img src="Images/Project Pictures/GlideNGo (1).png" alt="GlideNGo screenshot 1" class="proj-img-clickable" />
+                <img src="Images/Project Pictures/GlideNGo (2).png" alt="GlideNGo screenshot 2" class="proj-img-clickable" />
+                <img src="Images/Project Pictures/GlideNGo (3).png" alt="GlideNGo screenshot 3" class="proj-img-clickable" />
+                <img src="Images/Project Pictures/GlideNGo (4).png" alt="GlideNGo screenshot 4" class="proj-img-clickable" />
+                <img src="Images/Project Pictures/GlideNGo (5).png" alt="GlideNGo screenshot 5" class="proj-img-clickable" />
+                <img src="Images/Project Pictures/GlideNGo (6).png" alt="GlideNGo screenshot 6" class="proj-img-clickable" />
               </div>
               <div class="proj-imgs-hint"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> tap image to expand</div>
               <div class="project-top">
@@ -1508,6 +1562,30 @@ analyze(skills)</code></pre>
                   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/netlify/netlify-original.svg" width="32" height="32" alt="Netlify" />
                   <span>Netlify</span>
                 </div>
+                <div class="s-tech-item">
+                  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="32" height="32" alt="TypeScript" />
+                  <span>TypeScript</span>
+                </div>
+                <div class="s-tech-item">
+                  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="32" height="32" alt="Node.js" />
+                  <span>Node.js</span>
+                </div>
+                <div class="s-tech-item">
+                  <img src="https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/vite.svg" width="32" height="32" alt="Vite" />
+                  <span>Vite</span>
+                </div>
+                <div class="s-tech-item">
+                  <img src="https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/angular.svg" width="32" height="32" alt="Angular" />
+                  <span>Angular</span>
+                </div>
+                <div class="s-tech-item">
+                  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" width="32" height="32" alt="Express" />
+                  <span>Express</span>
+                </div>
+                <div class="s-tech-item">
+                  <img src="https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/supabase.svg" width="32" height="32" alt="SupaBase" />
+                  <span>SupaBase</span>
+                </div>
               </div>
             </div>
 
@@ -1571,8 +1649,8 @@ analyze(skills)</code></pre>
                   </div>
                   <div class="s-proj-expand-hint"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
                 </div>
-                <p class="s-project-desc">A frontend-focused civic technology platform designed to digitize barangay government services. Features include QR-based service flows and clean UX for non-technical residents.</p>
-                <div class="s-project-tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>UX Design</span></div>
+                <p class="s-project-desc">A full-stack focused civic technology platform designed to digitize barangay government services and requests in Barangay San Dionisio, Paranaque City. Features include QR-based service flows and verification system for supporting files and documents, intuitive navigation Admin Portal for barangay staffs, and a responsive web design for non-technical residents.</p>
+                <div class="s-project-tags"><span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>React</span><span>Apache</span><span>MySQL</span><span>PHP</span><span>AI Chatbot</span></div>
               </div>
 
               <!-- 2. GlideN'Go -->
@@ -1581,20 +1659,23 @@ analyze(skills)</code></pre>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17.3l-6.2 4L8.2 13.9 2 9.4h7.6z"/></svg>
                 </button>
                 <div class="s-proj-imgs">
-                  <img src="Images/Project Pictures/GlideN'Go (1).png" alt="GlideN'Go screenshot 1" class="proj-img-clickable" />
-                  <img src="Images/Project Pictures/GlideN'Go (2).png" alt="GlideN'Go screenshot 2" class="proj-img-clickable" />
-                  <img src="Images/Project Pictures/GlideN'Go (3).png" alt="GlideN'Go screenshot 3" class="proj-img-clickable" />
+                  <img src="Images/Project Pictures/GlideNGo (1).png" alt="GlideNGo screenshot 1" class="proj-img-clickable" />
+                  <img src="Images/Project Pictures/GlideNGo (2).png" alt="GlideNGo screenshot 2" class="proj-img-clickable" />
+                  <img src="Images/Project Pictures/GlideNGo (3).png" alt="GlideNGo screenshot 3" class="proj-img-clickable" />
+                  <img src="Images/Project Pictures/GlideNGo (4).png" alt="GlideNGo screenshot 4" class="proj-img-clickable" />
+                  <img src="Images/Project Pictures/GlideNGo (5).png" alt="GlideNGo screenshot 5" class="proj-img-clickable" />
+                  <img src="Images/Project Pictures/GlideNGo (6).png" alt="GlideNGo screenshot 6" class="proj-img-clickable" />
                 </div>
                 <div class="proj-imgs-hint"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> tap image to expand</div>
                 <div class="s-project-header">
                   <div>
                     <h3>GlideN'Go</h3>
-                    <p class="s-project-sub">Professional Fleet &amp; Cold-Chain Logistics</p>
+                    <p class="s-project-sub">Professional Fleet &amp; Supply Chain Management System</p>
                   </div>
                   <div class="s-proj-expand-hint"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
                 </div>
-                <p class="s-project-desc">A logistics management platform UI for professional fleet operations and cold-chain delivery tracking with real-time route monitoring and status dashboards.</p>
-                <div class="s-project-tags"><span>UI/UX</span><span>Figma</span><span>Logistics</span><span>Dashboards</span></div>
+                <p class="s-project-desc">A logistics management platform for professional fleet operations and cold-chain delivery tracking with real-time route monitoring, delivery status, truck-aware + smart rerouting and dashboard details.</p>
+                <div class="s-project-tags"><span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>FetchAPI</span><span>Node.js</span></div>
               </div>
 
               <!-- 3. LAKbayGAbayPh -->
@@ -1635,13 +1716,13 @@ analyze(skills)</code></pre>
                 <div class="proj-imgs-hint"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> tap image to expand</div>
                 <div class="s-project-header">
                   <div>
-                    <h3>OJT Attendance Tracker</h3>
-                    <p class="s-project-sub">OJT Attendance Tracker System</p>
+                    <h3>[AT]tendee Management Portal</h3>
+                    <p class="s-project-sub">Attendance Tracking System</p>
                   </div>
                   <div class="s-proj-expand-hint"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
                 </div>
-                <p class="s-project-desc">A QR-code based OJT attendance system with real-time logging, reporting dashboard, and admin management controls.</p>
-                <div class="s-project-tags"><span>Python</span><span>Flask</span><span>QR Code</span><span>Reports</span></div>
+                <p class="s-project-desc">An input-based attendance tracking system with real-time logging, reporting dashboard, monitoring Lates, Absences, Leaves and Overtime.</p>
+                <div class="s-project-tags"><span>JavaScript</span><span>CSS3</span><span>Google Apps Script</span><span>React</span><span>XML</span></div>
               </div>
 
               <!-- 5. Passfolio -->
@@ -1658,13 +1739,13 @@ analyze(skills)</code></pre>
                 <div class="proj-imgs-hint"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> tap image to expand</div>
                 <div class="s-project-header">
                   <div>
-                    <h3>Passfolio in One</h3>
-                    <p class="s-project-sub">Passport-Style Portfolio</p>
+                    <h3>PassFolio One</h3>
+                    <p class="s-project-sub">Password Portfolio System</p>
                   </div>
                   <div class="s-proj-expand-hint"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
                 </div>
-                <p class="s-project-desc">A passport-style personal portfolio featuring a travel-themed layout with achievement stamps, visa-page skills, and trip logs as career milestones.</p>
-                <div class="s-project-tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>UI Design</span></div>
+                <p class="s-project-desc">a secure password management and password generation system designed to help users create, organize, store, and manage their passwords in a centralized and protected environment.</p>
+                <div class="s-project-tags"><span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>React</span><span>Node.js</span><span>Express.js</span><span>Python</span><span>JWT</span><span>bcrypt</span><span>OAuth 2.0</span></div>
               </div>
 
               <!-- 6. GastaDoor -->
@@ -1687,8 +1768,8 @@ analyze(skills)</code></pre>
                   </div>
                   <div class="s-proj-expand-hint"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
                 </div>
-                <p class="s-project-desc">A budget manager app that helps you track your expenses, savings, and investments.</p>
-                <div class="s-project-tags"><span>Google Apps Script</span><span>JSON</span><span>Java</span><span>Android App</span></div>
+                <p class="s-project-desc">A budget manager app that helps you track your expenses, savings, and investments with proper guidance of budgeting finances</p>
+                <div class="s-project-tags"><span>Google Apps Script</span><span>JSON</span><span>Java</span><span>Android App</span><span>React</span><span>TypeScript</span></div>
               </div>
 
               <!-- 7. Bugtong2x -->
