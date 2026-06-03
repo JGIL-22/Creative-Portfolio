@@ -145,6 +145,21 @@ const ModeManager = (() => {
       if (el) el.style.opacity = mode === 'dev' ? '1' : '0';
     });
 
+    // Clear any accessibility filter classes from BOTH content layers on switch
+    // so filters don't bleed across modes (e.g. contrast persisting into Air Mode)
+    const filterCls = ['acc-grayscale','acc-invert','acc-hi-con','acc-cb-prot','acc-cb-deut','acc-cb-trit'];
+    ['devMode','airMode'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) filterCls.forEach(c => el.classList.remove(c));
+    });
+    // Also reset saved accessibility filter state so it doesn't reload on next visit
+    try {
+      const saved = JSON.parse(localStorage.getItem('acc_v2') || '{}');
+      if (saved.fw) { Object.keys(saved.fw).forEach(k => { saved.fw[k] = false; }); }
+      if (saved.cbIdx) saved.cbIdx = 0;
+      localStorage.setItem('acc_v2', JSON.stringify(saved));
+    } catch(_) {}
+
     if (mode === 'air') {
       setTimeout(() => activateSimpleTab('home'), 50);
     }
@@ -630,8 +645,7 @@ document.addEventListener('click', e => {
     document.body.style.overflow = '';
   }
 
-  hamburger.addEventListener('click', open);
-  closeBtn.addEventListener('click', close);
+  hamburger.addEventListener('click', () => { drawer.classList.contains('open') ? close() : open(); });
   overlay.addEventListener('click', close);
   document.addEventListener('keydown', e => { if (e.key==='Escape') close(); });
   document.addEventListener('click', e => { if (e.target.closest('[data-close]')) close(); });

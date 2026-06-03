@@ -4672,3 +4672,67 @@ html.mobile-preview .s-name {
 /* ── 7. Accessibility FAB & panel — always on top ── */
 #acc-fab  { z-index: 99970 !important; }
 #acc-menu { z-index: 99969 !important; }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   JGM FIXES — June 2026 (v3)
+   1. Hamburger toggles drawer (no internal X)
+   2. Drawer brand block with mode badge + hint text
+   3. Air Mode contrast fix (via JS, no CSS override needed)
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Drawer: no internal close button needed ── */
+.drawer-close { display: none !important; }
+
+/* ── Drawer brand header block ── */
+.drawer-header-brand {
+  padding: 4px 2px 16px;
+  border-bottom: 1px solid rgba(128,128,128,0.14);
+  margin-bottom: 10px;
+}
+.drawer-header-brand .drawer-brand-dev,
+.drawer-header-brand .drawer-brand-air {
+  display: none;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+[data-mode="dev"] .drawer-header-brand .drawer-brand-dev { display: block; color: rgba(255,255,255,0.9); }
+[data-mode="air"] .drawer-header-brand .drawer-brand-air { display: block; color: #0f1d3d; }
+
+.drawer-mode-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 6px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+[data-mode="dev"] .drawer-mode-badge {
+  background: linear-gradient(90deg, rgba(109,40,217,0.25), rgba(14,165,233,0.2));
+  border: 1px solid rgba(109,40,217,0.35);
+  color: #a78bfa;
+}
+[data-mode="air"] .drawer-mode-badge {
+  background: rgba(10,25,60,0.08);
+  border: 1px solid rgba(10,25,60,0.15);
+  color: #3d5280;
+}
+
+.drawer-mode-hint {
+  margin: 6px 0 0;
+  font-size: 11px;
+  font-style: italic;
+  line-height: 1.4;
+}
+[data-mode="dev"] .drawer-mode-hint { color: rgba(255,255,255,0.32); }
+[data-mode="air"] .drawer-mode-hint { color: rgba(10,25,60,0.38); }
+
+/* ── Hamburger open state → becomes X ── */
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
