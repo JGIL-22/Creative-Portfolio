@@ -10,8 +10,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ── 1. CSS ─────────────────────────────────────────────── */
   document.head.insertAdjacentHTML('beforeend', `<style>
-    /* Filter target — wraps page content, NOT body */
-    #acc-filter-wrap { transition: filter .25s ease; }
+    /* Filter target — content layers only, NOT the outer wrap
+       This ensures position:fixed elements (nav, gizmo, intros, cursors) stay anchored */
+    #acc-filter-wrap { transition: none !important; filter: none !important; }
+    #devMode, #airMode { transition: filter .25s ease; }
 
     /* FAB */
     #acc-fab {
@@ -85,13 +87,13 @@ document.addEventListener('DOMContentLoaded', function () {
     /* Reading guide — also fixed, outside filter wrap */
     #acc-guide-line { position:fixed; left:0; width:100%; height:24px; background:rgba(255,230,0,.38); border-top:2px solid #e60; border-bottom:2px solid #e60; pointer-events:none; z-index:2147483646; display:none; }
 
-    /* Feature classes — on wrapper, never body */
-    #acc-filter-wrap.acc-grayscale { filter: grayscale(100%); }
-    #acc-filter-wrap.acc-invert    { filter: invert(100%); }
-    #acc-filter-wrap.acc-hi-con    { filter: contrast(160%) brightness(.9); }
-    #acc-filter-wrap.acc-cb-prot   { filter: url('#_acc_prot');  }
-    #acc-filter-wrap.acc-cb-deut   { filter: url('#_acc_deut');  }
-    #acc-filter-wrap.acc-cb-trit   { filter: url('#_acc_trit');  }
+    /* Feature classes — applied to content layers, never on filter-wrap or body */
+    #devMode.acc-grayscale, #airMode.acc-grayscale { filter: grayscale(100%); }
+    #devMode.acc-invert,    #airMode.acc-invert    { filter: invert(100%); }
+    #devMode.acc-hi-con,    #airMode.acc-hi-con    { filter: contrast(160%) brightness(.9); }
+    #devMode.acc-cb-prot,   #airMode.acc-cb-prot   { filter: url('#_acc_prot');  }
+    #devMode.acc-cb-deut,   #airMode.acc-cb-deut   { filter: url('#_acc_deut');  }
+    #devMode.acc-cb-trit,   #airMode.acc-cb-trit   { filter: url('#_acc_trit');  }
 
     /* Dyslexia + links + cursor still on body (no filter involved) */
     body.acc-dyslexia * { font-family:'Comic Sans MS','Verdana',sans-serif !important; letter-spacing:.04em !important; }
@@ -147,7 +149,13 @@ document.addEventListener('DOMContentLoaded', function () {
   `);
 
   /* ── 3. STATE ────────────────────────────────────────────── */
-  const WRAP = document.getElementById('acc-filter-wrap');
+  // getWRAP() returns the currently VISIBLE mode layer so filters never touch
+  // position:fixed elements (nav, gizmo, intro overlays, cursors).
+  function getWRAP() {
+    const air = document.getElementById('airMode');
+    if (air && getComputedStyle(air).display !== 'none') return air;
+    return document.getElementById('devMode') || document.body;
+  }
   const STEP = 10, MIN = 80, MAX = 150;
   let zoom = 100;
 
@@ -174,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ── 4. ZOOM (CSS zoom — scales whole viewport content) ── */
   function applyZoom() {
     // CSS zoom scales the rendered page without affecting layout geometry
-    WRAP.style.zoom = (zoom / 100);
+    getWRAP().style.zoom = (zoom / 100);
     const el = $('acc-zoom-val');
     if (el) el.textContent = zoom + '%';
     $('acc-sz-up').disabled   = zoom >= MAX;
@@ -201,13 +209,13 @@ document.addEventListener('DOMContentLoaded', function () {
   function toggleFW(key) {
     const f = FW[key];
     f.on = !f.on;
-    WRAP.classList.toggle(f.cls, f.on);
+    getWRAP().classList.toggle(f.cls, f.on);
     // mutual exclusion
     if (key === 'contrast' && f.on) {
-      ['grayscale','invert'].forEach(k => { FW[k].on=false; WRAP.classList.remove(FW[k].cls); setBtn(FW[k].btn,false); });
+      ['grayscale','invert'].forEach(k => { FW[k].on=false; getWRAP().classList.remove(FW[k].cls); setBtn(FW[k].btn,false); });
     }
-    if (key === 'grayscale' && f.on) { FW.contrast.on=false; WRAP.classList.remove(FW.contrast.cls); setBtn(FW.contrast.btn,false); }
-    if (key === 'invert'    && f.on) { FW.contrast.on=false; WRAP.classList.remove(FW.contrast.cls); setBtn(FW.contrast.btn,false); }
+    if (key === 'grayscale' && f.on) { FW.contrast.on=false; getWRAP().classList.remove(FW.contrast.cls); setBtn(FW.contrast.btn,false); }
+    if (key === 'invert'    && f.on) { FW.contrast.on=false; getWRAP().classList.remove(FW.contrast.cls); setBtn(FW.contrast.btn,false); }
     setBtn(f.btn, f.on);
     save();
   }
@@ -222,9 +230,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function cycleCB() {
-    if (cbIdx > 0) WRAP.classList.remove(CB_CLS[cbIdx]);
+    if (cbIdx > 0) getWRAP().classList.remove(CB_CLS[cbIdx]);
     cbIdx = (cbIdx + 1) % CB_CLS.length;
-    if (cbIdx > 0) WRAP.classList.add(CB_CLS[cbIdx]);
+    if (cbIdx > 0) getWRAP().classList.add(CB_CLS[cbIdx]);
     const lbl = $('txt-cb');
     if (lbl) lbl.textContent = CB_LBLS[cbIdx];
     setBtn('btn-colorblind', cbIdx > 0);
@@ -328,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
     try { s = JSON.parse(localStorage.getItem('acc_v2')); } catch(_) {}
     if (!s) return;
     if (s.zoom && s.zoom !== 100) { zoom = Math.min(MAX, Math.max(MIN, s.zoom)); }
-    if (s.fw) Object.keys(FW).forEach(k => { if(s.fw[k]){ FW[k].on=true; WRAP.classList.add(FW[k].cls); setBtn(FW[k].btn,true); } });
+    if (s.fw) Object.keys(FW).forEach(k => { if(s.fw[k]){ FW[k].on=true; getWRAP().classList.add(FW[k].cls); setBtn(FW[k].btn,true); } });
     if (s.fb) Object.keys(FB).forEach(k => { if(s.fb[k]){ FB[k].on=true; document.body.classList.add(FB[k].cls); setBtn(FB[k].btn,true); } });
     if (s.cbIdx > 0) { for(let i=0;i<s.cbIdx;i++) cycleCB(); }
     if (s.guideOn) toggleGuide();

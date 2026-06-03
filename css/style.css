@@ -4559,3 +4559,116 @@ html.mobile-preview .s-name {
   background: rgba(0,0,0,0.25) !important;
   backdrop-filter: blur(2px) !important;
 }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   JGM CRITICAL FIXES — June 2026 (v2)
+   1. Navbar always fixed & visible (z-index above everything on mobile)
+   2. Gizmo always fixed (immune to filter/stacking context)
+   3. Intro screens fixed correctly
+   4. Drawer: X button restored, mode toggle removed, enhanced blur
+   5. Gizmo position fix for desktop accessibility filter usage
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Navbar — always on top, always fixed ── */
+.nav {
+  position: fixed !important;
+  top: 0 !important; left: 0 !important; right: 0 !important;
+  z-index: 9000 !important;
+  /* Enhanced backdrop blur */
+  backdrop-filter: blur(28px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+}
+
+/* ── 2. Gizmo — always fixed, always visible ── */
+.gizmo-toggle {
+  position: fixed !important;
+  bottom: 28px !important; right: 28px !important;
+  z-index: 9995 !important;
+}
+.gizmo-window {
+  position: fixed !important;
+  bottom: 100px !important; right: 28px !important;
+  z-index: 9994 !important;
+}
+@media (max-width: 480px) {
+  .gizmo-toggle { right: 16px !important; bottom: 20px !important; }
+  .gizmo-window { right: 16px !important; bottom: 90px !important; width: calc(100vw - 32px) !important; }
+}
+
+/* ── 3. Intro overlays — always fixed and on top ── */
+#intro, #airIntro {
+  position: fixed !important;
+  z-index: 99000 !important;
+}
+
+/* ── 4. Drawer enhancements ── */
+/* Restore close button (was hidden in prev patch) */
+.drawer-close {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 34px !important; height: 34px !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+}
+[data-mode="dev"] .drawer-close {
+  background: rgba(255,255,255,0.08) !important;
+  color: rgba(255,255,255,0.85) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+}
+[data-mode="air"] .drawer-close {
+  background: rgba(10,25,60,0.07) !important;
+  color: #3d5280 !important;
+  border: 1px solid rgba(10,25,60,0.12) !important;
+}
+.drawer-close:hover {
+  background: rgba(128,128,128,0.18) !important;
+  transform: scale(1.08) !important;
+}
+
+/* Drawer brand label — compact */
+.drawer-brand {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  opacity: 0.45 !important;
+  padding: 0 !important;
+}
+[data-mode="dev"] .drawer-brand-dev,
+[data-mode="air"] .drawer-brand-air { display: block; }
+[data-mode="dev"] .drawer-brand-air,
+[data-mode="air"] .drawer-brand-dev { display: none; }
+
+/* Enhanced drawer blur */
+.drawer {
+  backdrop-filter: blur(32px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
+}
+[data-mode="dev"] .drawer {
+  background: rgba(8, 12, 28, 0.88) !important;
+}
+[data-mode="air"] .drawer {
+  background: rgba(248, 246, 242, 0.90) !important;
+}
+
+/* ── 5. Overlay: subtle background for dropdown ── */
+.drawer-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 699 !important;
+}
+
+/* ── 6. Cursors, toast, curtain — always on top ── */
+#cursorDot, #cursorRing, #cursorTrail {
+  z-index: 99998 !important;
+}
+#modeCurtain { z-index: 99990 !important; }
+#toastNotif  { z-index: 99980 !important; }
+
+/* ── 7. Accessibility FAB & panel — always on top ── */
+#acc-fab  { z-index: 99970 !important; }
+#acc-menu { z-index: 99969 !important; }
