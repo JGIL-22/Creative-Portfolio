@@ -1863,3 +1863,270 @@ function renderAirPinned() {
 
   nodes.forEach(node => satIO.observe(node));
 })();
+
+/* ══════════════════════════════════════════════════════
+   CONTINUOUS SCROLL SYSTEM — V6 PATCH
+   Scroll-spy + page control dots for both modes
+   ══════════════════════════════════════════════════════ */
+
+(function initContinuousScroll() {
+
+  /* ── CONFIG ── */
+  const DEV_SECTIONS = [
+    { id: 'tab-home',    label: 'Home',    tab: 'home'    },
+    { id: 'tab-about',   label: 'About',   tab: 'about'   },
+    { id: 'tab-events',  label: 'Events',  tab: 'events'  },
+    { id: 'tab-works',   label: 'Works',   tab: 'works'   },
+    { id: 'tab-contact', label: 'Contact', tab: 'contact' },
+  ];
+  const AIR_SECTIONS = [
+    { id: 'stab-home',    label: 'Home',    stab: 'home'    },
+    { id: 'stab-about',   label: 'About',   stab: 'about'   },
+    { id: 'stab-works',   label: 'Works',   stab: 'works'   },
+    { id: 'stab-contact', label: 'Contact', stab: 'contact' },
+  ];
+
+  const pageControl = document.getElementById('pageControl');
+  let currentSections = [];
+  let currentMode = document.documentElement.dataset.mode || 'dev';
+
+  /* ── BUILD PAGE CONTROL DOTS ── */
+  function buildPageControl(sections) {
+    if (!pageControl) return;
+    pageControl.innerHTML = '';
+
+    sections.forEach((sec, i) => {
+      const line = document.createElement('div');
+      line.className = 'pc-line';
+      line.dataset.target = sec.id;
+      line.setAttribute('role', 'button');
+      line.setAttribute('aria-label', 'Jump to ' + sec.label);
+      line.setAttribute('tabindex', '0');
+
+      const dot = document.createElement('div');
+      dot.className = 'pc-dot';
+
+      const label = document.createElement('span');
+      label.className = 'pc-label';
+      label.textContent = sec.label;
+
+      line.appendChild(dot);
+      line.appendChild(label);
+
+      // Connector line between dots (except after last)
+      if (i < sections.length - 1) {
+        const conn = document.createElement('div');
+        conn.className = 'pc-connector';
+        line.appendChild(conn);
+      }
+
+      // Click to scroll to section
+      line.addEventListener('click', () => scrollToSection(sec.id));
+      line.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') scrollToSection(sec.id);
+      });
+
+      pageControl.appendChild(line);
+    });
+
+    currentSections = sections;
+  }
+
+  /* ── SCROLL TO SECTION ── */
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 70;
+    const top = el.getBoundingClientRect().top + window.scrollY - navH - 10;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+
+  /* ── UPDATE ACTIVE DOT + NAV TAB on scroll ── */
+  function updateActiveSection() {
+    if (!currentSections.length) return;
+
+    const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 70;
+    const scrollMid = window.scrollY + navH + window.innerHeight * 0.25;
+
+    let activeId = currentSections[0].id;
+
+    currentSections.forEach(sec => {
+      const el = document.getElementById(sec.id);
+      if (!el) return;
+      if (el.getBoundingClientRect().top + window.scrollY <= scrollMid) {
+        activeId = sec.id;
+      }
+    });
+
+    // Update page control dots
+    pageControl && pageControl.querySelectorAll('.pc-line').forEach(line => {
+      line.classList.toggle('active', line.dataset.target === activeId);
+    });
+
+    // Update nav tabs
+    const activeSec = currentSections.find(s => s.id === activeId);
+    if (!activeSec) return;
+
+    if (currentMode === 'dev') {
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        const isActive = btn.dataset.tab === activeSec.tab;
+        btn.classList.toggle('scroll-active', isActive);
+        btn.classList.toggle('active', isActive);
+      });
+    } else {
+      document.querySelectorAll('.snav-tab').forEach(btn => {
+        const isActive = btn.dataset.stab === activeSec.stab;
+        btn.classList.toggle('scroll-active', isActive);
+        btn.classList.toggle('active', isActive);
+      });
+    }
+  }
+
+  /* ── NAVBAR SCROLL EFFECT ── */
+  function updateNavScrolled() {
+    const nav = document.getElementById('nav');
+    if (!nav) return;
+    nav.classList.toggle('scrolled', window.scrollY > 30);
+  }
+
+  /* ── INTERCEPT NAV TAB CLICKS → SCROLL instead of switching tab ── */
+  function interceptNavClicks() {
+    // Dev mode tabs
+    document.querySelectorAll('.nav-tab[data-tab], .ftab[data-tab]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        if (document.documentElement.dataset.scroll !== 'continuous') return;
+        e.stopPropagation();
+        scrollToSection('tab-' + btn.dataset.tab);
+      }, true); // capture phase
+    });
+
+    // Air mode tabs
+    document.querySelectorAll('.snav-tab[data-stab], .sftab[data-stab]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        if (document.documentElement.dataset.scroll !== 'continuous') return;
+        e.stopPropagation();
+        scrollToSection('stab-' + btn.dataset.stab);
+      }, true);
+    });
+  }
+
+  /* ── INIT FOR CURRENT MODE ── */
+  function initForMode(mode) {
+    currentMode = mode;
+    if (mode === 'dev') {
+      buildPageControl(DEV_SECTIONS);
+    } else {
+      buildPageControl(AIR_SECTIONS);
+    }
+    // Trigger once to set initial state
+    setTimeout(updateActiveSection, 100);
+  }
+
+  /* ── OBSERVE MODE CHANGES ── */
+  const htmlObserver = new MutationObserver(() => {
+    const newMode = document.documentElement.dataset.mode || 'dev';
+    if (newMode !== currentMode) {
+      initForMode(newMode);
+      // After mode switch, scroll to top
+      setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 400);
+    }
+  });
+  htmlObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
+
+  /* ── SCROLL LISTENER (throttled) ── */
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateActiveSection();
+        updateNavScrolled();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  /* ── INIT ── */
+  document.addEventListener('DOMContentLoaded', () => {
+    // Give intros time to finish before setting up
+    setTimeout(() => {
+      interceptNavClicks();
+      initForMode(document.documentElement.dataset.mode || 'dev');
+      updateNavScrolled();
+    }, 200);
+  });
+
+  // Also run immediately if DOM is already ready
+  if (document.readyState !== 'loading') {
+    setTimeout(() => {
+      interceptNavClicks();
+      initForMode(document.documentElement.dataset.mode || 'dev');
+      updateNavScrolled();
+    }, 300);
+  }
+
+})();
+
+/* ══════════════════════════════════════════════════════
+   CONTINUOUS SCROLL: Patch original tab-switchers
+   Ensure [data-tab] and [data-stab] clicks scroll in
+   continuous mode instead of showing/hiding panels.
+   Also ensure all .reveal elements get observed globally.
+   ══════════════════════════════════════════════════════ */
+(function patchTabSwitchers() {
+  // Wait for DOMContentLoaded before patching
+  const patch = () => {
+    if (document.documentElement.dataset.scroll !== 'continuous') return;
+
+    // Override activateDevTab so it scrolls in continuous mode
+    const _origDevTab = window.activateDevTab;
+    window.activateDevTab = function(tabId) {
+      if (document.documentElement.dataset.scroll === 'continuous') {
+        const el = document.getElementById('tab-' + tabId);
+        if (el) {
+          const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 70;
+          const top = el.getBoundingClientRect().top + window.scrollY - navH - 10;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+        return;
+      }
+      if (_origDevTab) _origDevTab(tabId);
+    };
+
+    // Override activateSimpleTab so it scrolls in continuous mode
+    const _origSimpleTab = window.activateSimpleTab;
+    window.activateSimpleTab = function(tabId) {
+      if (document.documentElement.dataset.scroll === 'continuous') {
+        const el = document.getElementById('stab-' + tabId);
+        if (el) {
+          const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 70;
+          const top = el.getBoundingClientRect().top + window.scrollY - navH - 10;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+        return;
+      }
+      if (_origSimpleTab) _origSimpleTab(tabId);
+    };
+
+    // Observe ALL reveals immediately (since all panels are visible at once)
+    if (typeof revealObserver !== 'undefined') {
+      document.querySelectorAll('.reveal').forEach(el => {
+        if (!el.classList.contains('visible')) revealObserver.observe(el);
+      });
+    }
+    if (typeof airRevealObserver !== 'undefined') {
+      document.querySelectorAll('.s-reveal').forEach(el => {
+        if (!el.classList.contains('s-visible')) airRevealObserver.observe(el);
+      });
+    }
+    if (typeof skillObserver !== 'undefined') {
+      document.querySelectorAll('.skill-fill').forEach(f => skillObserver.observe(f));
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(patch, 500));
+  } else {
+    setTimeout(patch, 500);
+  }
+})();
