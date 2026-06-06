@@ -4421,7 +4421,7 @@ html.mobile-preview .jv-avatar      { width: 36px !important; height: 36px !impo
 /* ── 3b. Air mode hero name — one line, smaller if needed ── */
 @media (max-width: 720px) {
   .s-name {
-    font-size: clamp(28px, 8vw, 52px) !important;
+    font-size: clamp(26px, 8vw, 50px) !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
