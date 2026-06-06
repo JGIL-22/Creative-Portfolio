@@ -5191,3 +5191,129 @@ html.mobile-preview .s-hero-actions {
   padding: 4px 9px;
   border-radius: 5px;
 }
+
+/* ════════════════════════════════════════════════════
+   V6 PATCH — PART 3: Resume buttons + Drawer fixes
+   ════════════════════════════════════════════════════ */
+
+/* ── DEV MODE: Download Resume button in hero ── */
+.impact-cta-row {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.impact-btn-resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  color: rgba(255,255,255,.88);
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,.3);
+  transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: .02em;
+}
+.impact-btn-resume::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.05);
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+.impact-btn-resume:hover {
+  border-color: rgba(255,255,255,.6);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0,0,0,.25);
+}
+.impact-btn-resume:hover::before { opacity: 1; }
+.impact-btn-resume svg {
+  flex-shrink: 0;
+  transition: transform .25s ease;
+}
+.impact-btn-resume:hover svg { transform: translateY(2px); }
+
+/* ── AIR MODE: Download Resume button in hero ── */
+.s-btn-resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  color: #0f1d3d;
+  background: transparent;
+  border: 1.5px solid rgba(15,29,61,.3);
+  transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  letter-spacing: .01em;
+}
+.s-btn-resume:hover {
+  border-color: #0f1d3d;
+  background: rgba(15,29,61,.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 18px rgba(15,29,61,.1);
+}
+.s-btn-resume svg {
+  flex-shrink: 0;
+  transition: transform .25s ease;
+}
+.s-btn-resume:hover svg { transform: translateY(2px); }
+
+/* ── DRAWER FIX: ensure it always shows on mobile ── */
+/* Drawer uses transform: translateX for open/close — not display */
+/* No display overrides needed; existing rules are correct */
+
+/* Drawer links in continuous scroll mode — visual scroll indicator */
+[data-scroll="continuous"] .drawer-link {
+  position: relative;
+}
+[data-scroll="continuous"] .drawer-link:active {
+  transform: scale(0.98);
+}
+
+/* Drawer Resume download link style */
+.drawer-resume-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .2s ease;
+  margin-top: 8px;
+  border: 1px solid transparent;
+}
+[data-mode="dev"] .drawer-resume-link {
+  color: rgba(255,255,255,.85);
+  border-color: rgba(255,255,255,.15);
+  background: rgba(255,255,255,.04);
+}
+[data-mode="dev"] .drawer-resume-link:hover {
+  background: rgba(255,255,255,.09);
+  border-color: rgba(255,255,255,.3);
+  color: #fff;
+}
+[data-mode="air"] .drawer-resume-link {
+  color: #0f1d3d;
+  border-color: rgba(15,29,61,.2);
+  background: rgba(15,29,61,.03);
+}
+[data-mode="air"] .drawer-resume-link:hover {
+  background: rgba(15,29,61,.07);
+  border-color: rgba(15,29,61,.4);
+}
+.drawer-resume-link svg { flex-shrink: 0; }

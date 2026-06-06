@@ -100,6 +100,9 @@ function updateDrawerLinks(mode) {
       </a>
     </div>`;
 
+  const resumeIcon = `<svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+  const resumeLink = `<a href="file sources/JohnGilMayor_Resume.pdf" download="JohnGilMayor_Resume.pdf" class="drawer-resume-link" data-close>${resumeIcon}Download Resume</a>`;
+
   if (mode === 'dev') {
     container.innerHTML = `
       <button class="drawer-link" data-tab="home"    data-close>${icons.home}Home</button>
@@ -107,6 +110,7 @@ function updateDrawerLinks(mode) {
       <button class="drawer-link" data-tab="events"  data-close>${icons.events}Events</button>
       <button class="drawer-link" data-tab="works"   data-close>${icons.works}Works</button>
       <button class="drawer-link btn-drawer" data-tab="contact" data-close>${icons.contact}Get in Touch</button>
+      ${resumeLink}
       ${socials}`;
   } else {
     container.innerHTML = `
@@ -114,6 +118,7 @@ function updateDrawerLinks(mode) {
       <button class="drawer-link" data-stab="about"   data-close>${icons.about}About</button>
       <button class="drawer-link" data-stab="works"   data-close>${icons.works}Works</button>
       <button class="drawer-link btn-drawer" data-stab="contact" data-close>${icons.contact}Get in Touch</button>
+      ${resumeLink}
       ${socials}`;
   }
 }
@@ -639,8 +644,6 @@ document.addEventListener('click', e => {
     drawer.classList.add('open'); overlay.classList.add('open');
     overlay.removeAttribute('aria-hidden');
     hamburger.classList.add('open'); hamburger.setAttribute('aria-expanded','true');
-    // Don't lock scroll for dropdown-style drawer
-    // document.body.style.overflow = 'hidden';
   }
   function close() {
     drawer.classList.remove('open'); overlay.classList.remove('open');
@@ -652,7 +655,42 @@ document.addEventListener('click', e => {
   hamburger.addEventListener('click', () => { drawer.classList.contains('open') ? close() : open(); });
   overlay.addEventListener('click', close);
   document.addEventListener('keydown', e => { if (e.key==='Escape') close(); });
-  document.addEventListener('click', e => { if (e.target.closest('[data-close]')) close(); });
+
+  // Handle drawer link clicks — scroll in continuous mode, switch tab otherwise
+  drawer.addEventListener('click', e => {
+    const link = e.target.closest('[data-tab],[data-stab],[data-close]');
+    if (!link) return;
+
+    const isContinuous = document.documentElement.dataset.scroll === 'continuous';
+
+    if (isContinuous) {
+      // data-tab → scroll to #tab-{id}
+      if (link.dataset.tab) {
+        e.stopPropagation();
+        const targetId = 'tab-' + link.dataset.tab;
+        const el = document.getElementById(targetId);
+        if (el) {
+          const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 70;
+          const top = el.getBoundingClientRect().top + window.scrollY - navH - 10;
+          setTimeout(() => window.scrollTo({ top, behavior: 'smooth' }), 260); // after drawer closes
+        }
+      }
+      // data-stab → scroll to #stab-{id}
+      if (link.dataset.stab) {
+        e.stopPropagation();
+        const targetId = 'stab-' + link.dataset.stab;
+        const el = document.getElementById(targetId);
+        if (el) {
+          const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 70;
+          const top = el.getBoundingClientRect().top + window.scrollY - navH - 10;
+          setTimeout(() => window.scrollTo({ top, behavior: 'smooth' }), 260);
+        }
+      }
+    }
+
+    // Always close drawer on any [data-close] click
+    if ('close' in link.dataset || link.hasAttribute('data-close')) close();
+  });
 })();
 
 /* ══════════════════════════════════════════════════════
