@@ -638,58 +638,59 @@ document.addEventListener('click', e => {
   const hamburger = document.getElementById('hamburger');
   const drawer    = document.getElementById('drawer');
   const overlay   = document.getElementById('drawerOverlay');
-  const closeBtn  = document.getElementById('drawerClose');
+
+  if (!hamburger || !drawer || !overlay) return;
 
   function open() {
-    drawer.classList.add('open'); overlay.classList.add('open');
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    hamburger.classList.add('open');
+    hamburger.setAttribute('aria-expanded', 'true');
     overlay.removeAttribute('aria-hidden');
-    hamburger.classList.add('open'); hamburger.setAttribute('aria-expanded','true');
   }
   function close() {
-    drawer.classList.remove('open'); overlay.classList.remove('open');
-    overlay.setAttribute('aria-hidden','true');
-    hamburger.classList.remove('open'); hamburger.setAttribute('aria-expanded','false');
-    document.body.style.overflow = '';
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    overlay.setAttribute('aria-hidden', 'true');
   }
 
-  hamburger.addEventListener('click', () => { drawer.classList.contains('open') ? close() : open(); });
-  overlay.addEventListener('click', close);
-  document.addEventListener('keydown', e => { if (e.key==='Escape') close(); });
+  hamburger.addEventListener('click', e => {
+    e.stopPropagation();
+    drawer.classList.contains('open') ? close() : open();
+  });
 
-  // Handle drawer link clicks — scroll in continuous mode, switch tab otherwise
+  overlay.addEventListener('click', close);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+
   drawer.addEventListener('click', e => {
-    const link = e.target.closest('[data-tab],[data-stab],[data-close]');
+    const link = e.target.closest('[data-tab], [data-stab], [data-close], a');
     if (!link) return;
 
     const isContinuous = document.documentElement.dataset.scroll === 'continuous';
 
     if (isContinuous) {
-      // data-tab → scroll to #tab-{id}
-      if (link.dataset.tab) {
-        e.stopPropagation();
-        const targetId = 'tab-' + link.dataset.tab;
+      let targetId = null;
+      if (link.dataset.tab)  targetId = 'tab-'  + link.dataset.tab;
+      if (link.dataset.stab) targetId = 'stab-' + link.dataset.stab;
+
+      if (targetId) {
         const el = document.getElementById(targetId);
         if (el) {
-          const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 70;
-          const top = el.getBoundingClientRect().top + window.scrollY - navH - 10;
-          setTimeout(() => window.scrollTo({ top, behavior: 'smooth' }), 260); // after drawer closes
-        }
-      }
-      // data-stab → scroll to #stab-{id}
-      if (link.dataset.stab) {
-        e.stopPropagation();
-        const targetId = 'stab-' + link.dataset.stab;
-        const el = document.getElementById(targetId);
-        if (el) {
-          const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 70;
-          const top = el.getBoundingClientRect().top + window.scrollY - navH - 10;
-          setTimeout(() => window.scrollTo({ top, behavior: 'smooth' }), 260);
+          const navH = parseInt(getComputedStyle(document.documentElement)
+            .getPropertyValue('--nav-h')) || 70;
+          const top = el.getBoundingClientRect().top + window.scrollY - navH - 12;
+          close();
+          setTimeout(() => window.scrollTo({ top, behavior: 'smooth' }), 280);
+          return;
         }
       }
     }
 
-    // Always close drawer on any [data-close] click
-    if ('close' in link.dataset || link.hasAttribute('data-close')) close();
+    if (link.hasAttribute('data-close') || link.closest('[data-close]')) {
+      close();
+    }
   });
 })();
 
