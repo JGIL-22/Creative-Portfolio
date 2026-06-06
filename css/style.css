@@ -525,38 +525,114 @@ body.cursor-click #cursorRing { width: 24px; height: 24px; background: rgba(109,
 /* Mobile Drawer */
 .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(4px); z-index: 600; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
 .drawer-overlay.open { opacity: 1; pointer-events: all; }
-.drawer { position: fixed; top: 0; right: 0; width: min(300px,85vw); height: 100vh; z-index: 700; padding: 28px 24px; display: flex; flex-direction: column; transform: translateX(100%); transition: transform .35s var(--ease); }
+.drawer { position: fixed; top: 0; right: 0; width: min(320px,85vw); height: 100vh; z-index: 700; padding: 28px 24px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; transform: translateX(100%); transition: transform .35s var(--ease); }
 [data-mode="dev"] .drawer { background: #0c1020; border-left: 1px solid rgba(255,255,255,.09); }
 [data-mode="air"] .drawer { background: #f5f1eb; border-left: 1px solid rgba(10,25,60,.1); }
 .drawer.open { transform: translateX(0); }
-.drawer-close { align-self: flex-end; width: 36px; height: 36px; border-radius: 10px; font-size: 14px; margin-bottom: 28px; cursor: pointer; border: 1px solid rgba(128,128,128,.2); }
-[data-mode="dev"] .drawer-close { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
-[data-mode="air"] .drawer-close { background: rgba(10,25,60,.06); color: #0f1d3d; }
-/* Updated Drawer Brand */
+.drawer-close { align-self: flex-end; width: 36px; height: 36px; border-radius: 12px; font-size: 20px; line-height: 0; display: grid; place-items: center; margin-bottom: 12px; cursor: pointer; border: 1px solid rgba(128,128,128,.2); transition: transform .2s ease, background .2s ease; }
+.drawer-close:hover { transform: translateY(-1px); }
+[data-mode="dev"] .drawer-close { background: rgba(255,255,255,.08); color: rgba(255,255,255,.96); }
+[data-mode="air"] .drawer-close { background: rgba(10,25,60,.08); color: #0f1d3d; }
 .drawer-brand {
   font-family: 'Outfit', sans-serif;
   font-size: 18px;
   font-style: italic;
-  font-weight: 600;
-  margin-bottom: 32px;
-  line-height: 1.4;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+.drawer-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: 0.02em;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.9);
 }
-[data-mode="dev"] .drawer-brand-dev {
-  display: block;
-  background: linear-gradient(95deg,#a78bfa,#f97316);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+[data-mode="dev"] .drawer-brand-dev .drawer-mode-badge { color: rgba(255,255,255,.92); }
+[data-mode="air"] .drawer-mode-badge {
+  background: rgba(15,29,61,.08);
+  border-color: rgba(15,29,61,.12);
+  color: #0f1d3d;
 }
-[data-mode="dev"] .drawer-brand-air { display: none; }
-[data-mode="air"] .drawer-brand-dev { display: none; }
-[data-mode="air"] .drawer-brand-air { display: block; color: #0f1d3d; }
-.drawer-links { display: flex; flex-direction: column; gap: 6px; }
-.drawer-link { padding: 14px 16px; border-radius: var(--rsm); font-size: 16px; font-weight: 500; text-align: left; cursor: pointer; transition: background .2s ease, color .2s ease; }
-[data-mode="dev"] .drawer-link { color: rgba(255,255,255,.72); }
-[data-mode="air"] .drawer-link { color: #3d5280; }
-.drawer-link:hover { background: rgba(128,128,128,.1); }
+.drawer-mode-hint {
+  display: none;
+  margin-top: 12px;
+  font-size: 14px;
+  max-width: 100%;
+  line-height: 1.5;
+  color: rgba(255,255,255,.68);
+}
+[data-mode="air"] .drawer-mode-hint { color: #5b6f91; }
+[data-mode="dev"] .drawer-hint-dev,
+[data-mode="air"] .drawer-hint-air { display: block; }
+.drawer-links { display: flex; flex-direction: column; gap: 10px; }
+.drawer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, transform .2s ease;
+}
+.drawer-link:hover { transform: translateY(-1px); }
+[data-mode="dev"] .drawer-link { color: rgba(255,255,255,.92); }
+[data-mode="air"] .drawer-link { color: #0f1d3d; }
+.drawer-link:hover { background: rgba(255,255,255,.06); }
+[data-mode="air"] .drawer-link:hover { background: rgba(15,29,61,.08); }
+.dl-icon { width: 20px; height: 20px; min-width: 20px; stroke-width: 1.8; }
+.drawer-resume-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 13px 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.08);
+  color: inherit;
+  font-weight: 600;
+  transition: background .2s ease, transform .2s ease;
+}
+[data-mode="air"] .drawer-resume-link { background: rgba(15,29,61,.06); }
+.drawer-resume-link:hover { transform: translateY(-1px); background: rgba(255,255,255,.14); }
+[data-mode="air"] .drawer-resume-link:hover { background: rgba(15,29,61,.1); }
+.drawer-socials {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding-top: 12px;
+  margin-top: auto;
+}
+.drawer-social-link {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: rgba(255,255,255,.06);
+  color: inherit;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+.drawer-social-link:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,.12);
+}
+[data-mode="air"] .drawer-social-link { background: rgba(15,29,61,.05); }
+[data-mode="air"] .drawer-social-link:hover { background: rgba(15,29,61,.12); }
 .btn-drawer { background: var(--grad) !important; color: white !important; margin-top: 12px; font-weight: 600; text-align: center; }
 
 /* Tab panels (simple air mode) */
