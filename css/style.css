@@ -4990,7 +4990,7 @@ html.mobile-preview .s-name {
 }
 @media (max-width: 480px) {
   .s-name {
-    font-size: clamp(32px, 12vw, 52px) !important;
+    font-size: (28px, 12vw, 52px) !important;
   }
   .s-eyebrow {
     font-size: 10px !important;
