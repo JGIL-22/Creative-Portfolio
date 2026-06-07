@@ -2379,3 +2379,37 @@ function renderAirPinned() {
     init();
   }
 })();
+
+/* Responsive continuous gallery speed
+   Keep visible scroll speed (px/s) consistent across viewport sizes
+*/
+(function responsiveGallerySpeed() {
+  const tracks = document.querySelectorAll('.s-pic-gallery-track');
+  if (!tracks.length) return;
+
+  tracks.forEach(track => {
+    // read initial computed duration (s)
+    const cs = getComputedStyle(track);
+    const initialDur = parseFloat(cs.animationDuration) || 24;
+    const baselinePps = (track.scrollWidth * 0.5) / initialDur || 1;
+    track.dataset._baselinePps = baselinePps;
+
+    function apply() {
+      const pps = parseFloat(track.dataset._baselinePps) || 1;
+      const dur = (track.scrollWidth * 0.5) / pps;
+      const clamped = Math.max(6, Math.min(dur, 180));
+      track.style.animationDuration = clamped.toFixed(2) + 's';
+    }
+
+    // Update after images load (they affect widths)
+    track.querySelectorAll('img').forEach(img => {
+      if (!img.complete) img.addEventListener('load', () => setTimeout(apply, 30));
+    });
+
+    let to;
+    window.addEventListener('resize', () => { clearTimeout(to); to = setTimeout(apply, 120); });
+
+    // apply once after layout settles
+    setTimeout(apply, 60);
+  });
+})();
