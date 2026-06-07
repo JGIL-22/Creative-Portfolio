@@ -1726,6 +1726,11 @@ function renderAirPinned() {
     document.body.style.overflow = 'hidden';
   }
 
+  window.openProjectPopoutById = function (projId, startIdx = 0) {
+    const card = document.querySelector(`[data-pid="${projId}"], [data-spid="${projId}"]`);
+    if (card) openPopout(card, startIdx);
+  };
+
   function closePopout() {
     pop.classList.remove('pp-open');
     document.body.style.overflow = '';
@@ -2167,5 +2172,210 @@ function renderAirPinned() {
     document.addEventListener('DOMContentLoaded', () => setTimeout(patch, 500));
   } else {
     setTimeout(patch, 500);
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════
+   3D CAROUSEL — Project Cards for Dev & Air Mode
+   ═══════════════════════════════════════════════════════ */
+(function () {
+
+  /* ── Project data (thumbnail = first image of each project) ── */
+  const PROJECTS = [
+    {
+      id: 'clickizenship',
+      title: 'CLICKizenship',
+      sub: 'Barangay DigiServices Request System',
+      desc: 'Civic tech platform digitizing barangay government services with QR-based service flows, verification system for supporting files and documents, intuitive Admin Portal for barangay staffs, and a responsive web design for non-technical residents.',
+      badge: 'Featured',
+      tags: ['HTML5','CSS3','JavaScript','React','Apache','MySQL','PHP','AI Chatbot'],
+      thumb: 'Images/Project Pictures/CLICKizenship  (3).png'
+    },
+    {
+      id: 'glidego',
+      title: "GlideN'Go",
+      sub: 'Professional Fleet & Cold-Chain Logistics',
+      desc: 'A logistics management platform for professional fleet operations and cold-chain delivery tracking with real-time route monitoring, delivery status, truck-aware smart rerouting and dashboard details.',
+      badge: '',
+      tags: ['HTML5','CSS3','JavaScript','FetchAPI','Node.js','UI/UX','Figma'],
+      thumb: 'Images/Project Pictures/GlideNGo (1).png'
+    },
+    {
+      id: 'lakbay',
+      title: 'LAKbayGAbayPh',
+      sub: 'Traversing Project 82 — MapaSayo Generator',
+      desc: 'A data-driven travel web app featuring an interactive province map, travel notes, bucket list, long weekends carousel, and a KalenDAYO calendar with 2026 Philippine holidays. Firebase-powered cross-device sync.',
+      badge: '',
+      tags: ['HTML','CSS','JavaScript','Firebase','Firestore','Python','Maps'],
+      thumb: 'Images/Project Pictures/LAKbayGAbayPh (1).png'
+    },
+    {
+      id: 'ojt',
+      title: 'OJT Attendance Tracker',
+      sub: 'OJT Attendance Tracker System',
+      desc: 'A QR-code based OJT attendance management system with real-time logging, reporting dashboard, and admin controls for internship monitoring.',
+      badge: '',
+      tags: ['Python','Flask','QR Code','SQL'],
+      thumb: 'Images/Project Pictures/OJT ATS (3).png'
+    },
+    {
+      id: 'passfolio',
+      title: 'Passfolio in One',
+      sub: 'Passport-Style Portfolio',
+      desc: 'A passport-style personal portfolio featuring a travel-themed layout with achievement stamps, visa-page skills, and trip logs as career milestones.',
+      badge: '',
+      tags: ['HTML','CSS','JavaScript'],
+      thumb: 'Images/Project Pictures/PassFolio (1).png'
+    },
+    {
+      id: 'gastadoor',
+      title: 'GastaDoor',
+      sub: 'Budget Manager App in your Home',
+      desc: 'A budget manager app that helps you track your expenses, savings, and investments with an intuitive Android-friendly interface.',
+      badge: '',
+      tags: ['Google Apps Script','JSON','Java','Android App'],
+      thumb: 'Images/Project Pictures/GastaDoor (1).jpg'
+    },
+    {
+      id: 'bugtong2x',
+      title: 'Bugtong2x',
+      sub: 'Classic Filipino Riddle Game',
+      desc: 'A Filipino riddle game featuring a collection of riddles from the Philippines with multiple difficulty levels and a scoring system.',
+      badge: '',
+      tags: ['TypeScript','Vite','Tailwind CSS','React','Express','Firebase'],
+      thumb: 'Images/Project Pictures/Bugtong (1).png'
+    }
+  ];
+
+  const CARD_W = 220;
+
+  function getRadius(n) {
+    // Circumradius: distance from center so cards don't overlap
+    // r = (cardWidth / 2) / tan(π / n), add padding factor
+    const r = Math.round((CARD_W / 2) / Math.tan(Math.PI / n)) + 60;
+    // Cap for mobile
+    return window.innerWidth <= 720 ? Math.min(r, 260) : Math.min(r, 500);
+  }
+
+  /* ── Build carousel cards ── */
+  function buildCarousel(trackEl, mode) {
+    trackEl.innerHTML = '';
+    const n = PROJECTS.length;
+    const r = getRadius(n);
+    const angle = 360 / n;
+
+    PROJECTS.forEach((proj, i) => {
+      const card = document.createElement('div');
+      card.className = 'c3d-card';
+      card.style.transform = `rotateY(${angle * i}deg) translateZ(${r}px)`;
+      card.setAttribute('data-proj-id', proj.id);
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', `View ${proj.title}`);
+
+      const img = document.createElement('img');
+      img.src = proj.thumb;
+      img.alt = proj.title;
+      img.loading = 'lazy';
+
+      const label = document.createElement('div');
+      label.className = 'c3d-card-label';
+      label.innerHTML = `${proj.title}<div class="c3d-card-sub">${proj.sub}</div>`;
+
+      card.appendChild(img);
+      card.appendChild(label);
+
+      card.addEventListener('click', () => {
+        if (window.openProjectPopoutById) window.openProjectPopoutById(proj.id);
+      });
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (window.openProjectPopoutById) window.openProjectPopoutById(proj.id);
+        }
+      });
+
+      trackEl.appendChild(card);
+    });
+  }
+
+  /* ── Pause/resume on hover ── */
+  function attachHoverPause(sceneEl, trackEl) {
+    const overlay = document.getElementById('projModalOverlay');
+    const isModalOpen = () => overlay && overlay.classList.contains('open');
+
+    sceneEl.addEventListener('pointerenter', () => trackEl.classList.add('paused'));
+    sceneEl.addEventListener('pointerleave', () => {
+      if (!isModalOpen()) trackEl.classList.remove('paused');
+    });
+
+    // Fallback resume if mouseleave is missed or the carousel remains paused after a quick interaction.
+    document.addEventListener('mousemove', () => {
+      if (trackEl.classList.contains('paused') && !isModalOpen() && !sceneEl.matches(':hover')) {
+        trackEl.classList.remove('paused');
+      }
+    });
+  }
+
+  /* ── Modal open/close ── */
+  const overlay  = document.getElementById('projModalOverlay');
+  const closeBtn = document.getElementById('projModalClose');
+
+  function openModal(proj) {
+    // Pause both carousels
+    document.querySelectorAll('.carousel3d-track').forEach(t => t.classList.add('paused'));
+
+    document.getElementById('projModalThumb').src   = proj.thumb;
+    document.getElementById('projModalThumb').alt   = proj.title;
+    document.getElementById('projModalBadge').textContent  = proj.badge || '';
+    document.getElementById('projModalTitle').textContent  = proj.title;
+    document.getElementById('projModalSub').textContent    = proj.sub;
+    document.getElementById('projModalDesc').textContent   = proj.desc;
+
+    const tagsEl = document.getElementById('projModalTags');
+    tagsEl.innerHTML = proj.tags.map(t => `<span>${t}</span>`).join('');
+
+    overlay.classList.add('open');
+    overlay.removeAttribute('aria-hidden');
+    closeBtn.focus();
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    // Resume both carousels
+    document.querySelectorAll('.carousel3d-track').forEach(t => t.classList.remove('paused'));
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  /* ── Rebuild on resize to fix radius ── */
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const devTrack = document.getElementById('devCarouselTrack');
+      const airTrack = document.getElementById('airCarouselTrack');
+      if (devTrack) buildCarousel(devTrack, 'dev');
+      if (airTrack) buildCarousel(airTrack, 'air');
+    }, 200);
+  });
+
+  /* ── Init on DOMContentLoaded ── */
+  function init() {
+    const devScene = document.getElementById('devCarousel3d');
+    const devTrack = document.getElementById('devCarouselTrack');
+    const airScene = document.getElementById('airCarousel3d');
+    const airTrack = document.getElementById('airCarouselTrack');
+
+    if (devTrack) { buildCarousel(devTrack, 'dev'); attachHoverPause(devScene, devTrack); }
+    if (airTrack) { buildCarousel(airTrack, 'air'); attachHoverPause(airScene, airTrack); }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
 })();
