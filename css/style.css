@@ -1157,12 +1157,14 @@ input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.6); }
 
 /* Air Hero */
 .s-hero-section { background: #eceae4; padding: 0; }
-.s-hero { min-height: calc(100vh - var(--nav-h)); display: grid; grid-template-columns: 1.2fr .8fr; gap: 50px; align-items: flex-start; padding: 50px 0 60px; }
+.s-hero { min-height: calc(100vh - var(--nav-h)); display: grid; grid-template-columns: 1.2fr .8fr; grid-template-rows: auto auto; grid-template-areas: "heroText heroCard" "heroActions heroCard"; gap: 50px 40px; align-items: start; padding: 50px 0 60px; }
+.s-hero-text { grid-area: heroText; }
+.s-hero-card { grid-area: heroCard; }
 .s-eyebrow { font-size: 15px; font-weight: 600; letter-spacing: .10em; text-transform: uppercase; color: #3d5a8a; margin-bottom: 10px; }
-.s-name { font-family: 'Lora', serif; font-size: 70px; font-weight: 600; color: #192b56; line-height: 1.50; letter-spacing: -.02em; margin-bottom: 15px; }
+.s-name { font-family: 'Lora', serif; font-size: 70px; font-weight: 600; color: #192b56; line-height: 1.50; letter-spacing: -.02em; margin-bottom: 24px; }
 .s-tagline { font-size: 12px; color: #3d5280; font-weight: 500; margin-bottom: 22px; }
-.s-intro { font-size: 15px; line-height: 1.75; color: #4a5570; max-width: 520px; margin-bottom: 24px; }
-.s-hero-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 500px; }
+.s-intro { font-size: 15px; line-height: 1.75; color: #4a5570; max-width: 520px; margin-bottom: 30px; }
+.s-hero-actions { grid-area: heroActions; display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 500px; }
 
 .s-btn-primary { display: flex; align-items: center; justify-content: center; padding: 13px 26px; border-radius: 10px; background: #0f1d3d; color: white; font-size: 14px; font-weight: 600; transition: background .2s ease, transform .2s ease; width: 100%; }
 .s-btn-primary:hover { background: #1a3060; transform: translateY(-2px); }
@@ -1663,7 +1665,12 @@ a.s-contact-val:hover { color: #3d5a8a; }
   .nav { padding: 0 16px; gap: 8px; }
   .hero-actions { flex-direction: column; }
   .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
-  .s-hero-actions { flex-direction: column; }
+  .s-hero { padding: 24px 0 30px; gap: 32px; grid-template-columns: 1fr; grid-template-areas: "heroText" "heroCard" "heroActions"; }
+  .s-hero-text { grid-area: heroText; }
+  .s-hero-card { grid-area: heroCard; width: 100%; max-width: 100%; }
+  .s-hero-actions { grid-area: heroActions; flex-direction: column; width: 100%; max-width: 100%; }
+  .s-name { margin-bottom: 20px; }
+  .s-intro { margin-bottom: 24px; }
   .s-btn-primary, .s-btn-outline { width: 100%; justify-content: center; }
   #cursorDot,#cursorRing,#cursorTrail { display: none !important; }
   .s-pic-grid { grid-template-columns: 1fr; }
@@ -1674,6 +1681,7 @@ a.s-contact-val:hover { color: #3d5a8a; }
   .gizmo-toggle { right: 16px; bottom: 20px; }
   .footer-address { flex-direction: column; gap: 4px; }
 }
+
 
 /* ══════════════════════════════════════════════════
    WINDMILL ANIMATION (for Air Mode icon)
@@ -4990,7 +4998,7 @@ html.mobile-preview .s-name {
 }
 @media (max-width: 480px) {
   .s-name {
-    font-size: (28px, 12vw, 52px) !important;
+    font-size: clamp(32px, 12vw, 52px) !important;
   }
   .s-eyebrow {
     font-size: 10px !important;
