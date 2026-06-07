@@ -4178,6 +4178,15 @@ html.mobile-preview::before {
   /* Event photos full bleed */
   .event-photo { height: 160px; }
 
+  /* Prevent horizontal overflow on some mobile browsers */
+  html, body { overflow-x: hidden; }
+
+  /* Prevent the last row of large display letters from being cropped
+     by parent containers on small screens. Increase line-height and
+     add a small bottom padding so descenders (like 'Y') remain visible. */
+  .hero-impact { padding-bottom: 12px; }
+  .impact-name { line-height: 1.05; transform: scaleY(1.12); }
+
   /* Org carousel items */
   .org-item { padding: 12px 20px; font-size: 12px; }
 
