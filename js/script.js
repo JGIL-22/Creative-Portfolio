@@ -2388,28 +2388,33 @@ function renderAirPinned() {
   if (!tracks.length) return;
 
   tracks.forEach(track => {
-    // read initial computed duration (s)
     const cs = getComputedStyle(track);
     const initialDur = parseFloat(cs.animationDuration) || 24;
-    const baselinePps = (track.scrollWidth * 0.5) / initialDur || 1;
+
+    // baseline pixels-per-second. If the calculated baseline is too low
+    // (e.g. when loaded on a small viewport) fall back to a conservative value.
+    let baselinePps = (track.scrollWidth * 0.5) / initialDur;
+    if (!baselinePps || baselinePps < 60) baselinePps = 160; // px/s fallback
     track.dataset._baselinePps = baselinePps;
 
     function apply() {
-      const pps = parseFloat(track.dataset._baselinePps) || 1;
+      const pps = parseFloat(track.dataset._baselinePps) || 160;
       const dur = (track.scrollWidth * 0.5) / pps;
-      const clamped = Math.max(6, Math.min(dur, 180));
+      // Use a larger minimum duration on small screens so motion feels slower
+      const minDur = window.innerWidth <= 480 ? 12 : 6;
+      const clamped = Math.max(minDur, Math.min(dur, 180));
       track.style.animationDuration = clamped.toFixed(2) + 's';
     }
 
     // Update after images load (they affect widths)
     track.querySelectorAll('img').forEach(img => {
-      if (!img.complete) img.addEventListener('load', () => setTimeout(apply, 30));
+      if (!img.complete) img.addEventListener('load', () => setTimeout(apply, 40));
     });
 
     let to;
-    window.addEventListener('resize', () => { clearTimeout(to); to = setTimeout(apply, 120); });
+    window.addEventListener('resize', () => { clearTimeout(to); to = setTimeout(apply, 140); });
 
-    // apply once after layout settles
-    setTimeout(apply, 60);
+    // initial apply
+    setTimeout(apply, 80);
   });
 })();
