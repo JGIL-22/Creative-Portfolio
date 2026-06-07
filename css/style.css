@@ -1338,6 +1338,7 @@ input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.6); }
   .s-pic-gallery-item { flex: 0 0 86%; min-width: 86%; max-width: 92vw; height: 180px; }
   .s-pic-gallery-track { gap: 12px; padding-left: 0; }
   .s-pic-gallery-mask::before, .s-pic-gallery-mask::after { width: 36px; }
+}
 
 /* About Grid Air */
 .s-about-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 48px; align-items: start; }
