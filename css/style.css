@@ -1314,10 +1314,10 @@ input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.6); }
 .s-pic-gallery-label { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #3d5a8a; margin-bottom: 14px; margin-top: 20px; }
 .s-pic-gallery { position: relative; overflow: hidden; margin-bottom: 24px; }
 .s-pic-gallery-mask { position: relative; overflow: hidden; }
-.s-pic-gallery-track { display: flex; flex-wrap: nowrap; align-items: center; gap: 16px; width: max-content; animation: gallerySlide 40s linear infinite; will-change: transform; --gallery-shift: 0px; }
+.s-pic-gallery-track { display: flex; flex-wrap: nowrap; align-items: center; gap: 16px; width: max-content; animation: gallerySlide 20s linear infinite; will-change: transform; --gallery-shift: 0px; }
 .s-pic-gallery-item { flex: 0 0 320px; min-width: 280px; height: 220px; border-radius: 22px; overflow: hidden; background: #e6e2dd; position: relative; box-shadow: 0 14px 30px rgba(15,29,61,.12); }
 .s-pic-gallery-track > .s-pic-gallery-item { flex-shrink: 0; }
-.s-pic-gallery-track { animation-name: gallerySlide; animation-duration: 40s; animation-timing-function: linear; animation-iteration-count: infinite; animation-direction: normal; animation-fill-mode: forwards; animation-delay: 0s; }
+.s-pic-gallery-track { animation-name: gallerySlide; animation-duration: 20s; animation-timing-function: linear; animation-iteration-count: infinite; animation-direction: normal; animation-fill-mode: forwards; animation-delay: 0s; }
 .s-pic-gallery-item img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; transition: transform .5s ease; }
 .s-pic-gallery-item:hover img { transform: scale(1.04); }
 .s-pic-gallery-mask::before, .s-pic-gallery-mask::after { content: ''; position: absolute; top: 0; bottom: 0; width: 96px; pointer-events: none; z-index: 2; }
