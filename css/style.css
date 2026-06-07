@@ -1333,28 +1333,40 @@ input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.6); }
   .s-pic-gallery-item { flex: 0 0 280px; min-width: 240px; height: 190px; }
 }
 
-/* ── Mobile gallery: replace auto-scroll carousel with a 2-col grid ── */
+/* ── Mobile gallery: native swipe carousel via CSS scroll-snap ── */
 @media (max-width: 720px) {
-  /* Stop the infinite scroll animation entirely */
+  /* Turn the mask into the scroll container */
+  .s-pic-gallery-mask {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .s-pic-gallery-mask::-webkit-scrollbar { display: none; }
+
+  /* Reset the track — plain flex row, no animation */
   .s-pic-gallery-track {
     animation: none !important;
     transform: none !important;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    width: 100%;
-    padding: 0 4px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: max-content;
+    gap: 12px;
+    padding: 4px 16px;
   }
 
-  /* Use aspect-ratio so images scale naturally — no fixed height = no cropping */
+  /* Each card: 80vw wide, aspect-ratio drives height — zero cropping */
   .s-pic-gallery-item {
-    flex: unset;
+    flex: 0 0 80vw;
     min-width: unset;
     max-width: unset;
-    width: 100%;
+    width: 80vw;
     height: auto;
     aspect-ratio: 4 / 3;
-    border-radius: 14px;
+    border-radius: 18px;
+    scroll-snap-align: center;
   }
 
   .s-pic-gallery-item img {
@@ -1364,17 +1376,16 @@ input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.6); }
     object-position: center top;
   }
 
-  /* Hide the duplicate set — only the first 7 originals show in the grid */
+  /* Hide duplicates — only the 7 originals needed for a swipe carousel */
   .s-pic-gallery-track > .s-pic-gallery-item:nth-child(n+8) {
     display: none;
   }
 
-  /* Masks are decorative for scroll illusion only — hide on mobile */
+  /* Hide fade masks — not needed without auto-scroll */
   .s-pic-gallery-mask::before,
   .s-pic-gallery-mask::after { display: none; }
 
-  .s-pic-gallery { padding: 0; overflow: visible; }
-  .s-pic-gallery-mask { overflow: visible; }
+  .s-pic-gallery { padding: 0; overflow: hidden; }
 }
 
 /* About Grid Air */
