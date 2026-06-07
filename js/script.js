@@ -2399,7 +2399,11 @@ function renderAirPinned() {
 
     function apply() {
       const pps = parseFloat(track.dataset._baselinePps) || 160;
-      const dur = (track.scrollWidth * 0.5) / pps;
+      // compute the exact pixel shift (half the scrollable width — one sequence)
+      const shift = track.scrollWidth * 0.5;
+      track.style.setProperty('--gallery-shift', Math.round(shift) + 'px');
+
+      const dur = shift / pps;
       // Use a larger minimum duration on small screens so motion feels slower
       const minDur = window.innerWidth <= 480 ? 12 : 6;
       const clamped = Math.max(minDur, Math.min(dur, 180));
