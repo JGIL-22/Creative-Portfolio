@@ -1334,10 +1334,11 @@ input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.6); }
 }
 
 @media (max-width: 720px) {
-  .s-pic-gallery { padding: 0 12px; }
-  .s-pic-gallery-item { flex: 0 0 86%; min-width: 86%; max-width: 92vw; height: 190px; }
-  .s-pic-gallery-track { gap: 14px; padding-left: 4px; }
-  .s-pic-gallery-mask::before, .s-pic-gallery-mask::after { width: 56px; }
+  .s-pic-gallery { padding: 0 8px; }
+  .s-pic-gallery-item { flex: 0 0 86%; min-width: 86%; max-width: 92vw; height: 150px; }
+  .s-pic-gallery-track { gap: 12px; padding-left: 0; }
+  .s-pic-gallery-mask::before, .s-pic-gallery-mask::after { width: 48px; }
+  .s-pic-gallery-item img { transition: transform .4s ease; }
 }
 
 /* About Grid Air */
