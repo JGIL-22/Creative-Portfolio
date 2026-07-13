@@ -168,6 +168,10 @@ const ModeManager = (() => {
     if (mode === 'air') {
       setTimeout(() => activateSimpleTab('home'), 50);
     }
+
+    document.dispatchEvent(new CustomEvent('jg-mode-applied', {
+      detail: { mode, initial: !!skipTransition }
+    }));
   }
 
   function switchTo(newMode) {
@@ -224,6 +228,138 @@ const ModeManager = (() => {
 })();
 
 /* ══════════════════════════════════════════════════════
+   MODE SUGGESTION POPOUT — 10s hint to try the other mode
+   ══════════════════════════════════════════════════════ */
+(function initModeTipPopout() {
+  const popout   = document.getElementById('modeTipPopout');
+  const btn      = document.getElementById('modeTipBtn');
+  const closeBtn = document.getElementById('modeTipClose');
+  const infoBtn  = document.getElementById('modeTipInfo');
+  const descEl   = document.getElementById('modeTipDesc');
+  const toggle   = document.getElementById('modeToggle');
+  if (!popout || !btn || !toggle || !descEl) return;
+
+  const SHOW_MS = 10000;
+  let hideTimer = null;
+  let showTimer = null;
+  let pendingMode = 'air';
+
+  const MODE_INFO = {
+    air: '<strong>Air Mode</strong> is corporate-focused — best for hiring teams, HR, and recruiters.',
+    dev: '<strong>Dev Mode</strong> is built for IT teams, tech enthusiasts, and developer audiences.'
+  };
+
+  function otherMode() {
+    return ModeManager.getCurrentMode() === 'dev' ? 'air' : 'dev';
+  }
+
+  function modeLabel(mode) {
+    return mode === 'dev' ? 'Dev Mode' : 'Air Mode';
+  }
+
+  function closeDesc() {
+    descEl.hidden = true;
+    descEl.innerHTML = '';
+    if (infoBtn) {
+      infoBtn.classList.remove('is-active');
+      infoBtn.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  function toggleDesc() {
+    if (!descEl.hidden) {
+      closeDesc();
+      positionTip();
+      return;
+    }
+    descEl.innerHTML = MODE_INFO[pendingMode] || '';
+    descEl.hidden = false;
+    if (infoBtn) {
+      infoBtn.classList.add('is-active');
+      infoBtn.setAttribute('aria-expanded', 'true');
+    }
+    positionTip();
+  }
+
+  function positionTip() {
+    const rect = toggle.getBoundingClientRect();
+    const gap = 10;
+    const margin = 12;
+    const width = popout.offsetWidth || Math.min(300, window.innerWidth - 24);
+    let left = rect.left + rect.width / 2 - width / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - width - margin));
+    popout.style.left = left + 'px';
+    popout.style.top = (rect.bottom + gap) + 'px';
+    const tailX = rect.left + rect.width / 2 - left - 8;
+    popout.style.setProperty('--mode-tip-tail-x', Math.max(18, Math.min(tailX, width - 26)) + 'px');
+  }
+
+  function hideTip() {
+    clearTimeout(hideTimer);
+    clearTimeout(showTimer);
+    closeDesc();
+    if (popout.hidden) return;
+    popout.classList.add('is-hiding');
+    popout.classList.remove('is-visible');
+    setTimeout(() => {
+      popout.hidden = true;
+      popout.classList.remove('is-hiding');
+    }, 360);
+  }
+
+  function showTip() {
+    clearTimeout(hideTimer);
+    clearTimeout(showTimer);
+    const target = otherMode();
+    pendingMode = target;
+    btn.textContent = 'Try ' + modeLabel(target);
+    btn.dataset.targetMode = target;
+    closeDesc();
+    if (infoBtn) {
+      infoBtn.setAttribute('aria-label', 'Learn about ' + modeLabel(target));
+      infoBtn.setAttribute('aria-expanded', 'false');
+    }
+    popout.hidden = false;
+    popout.classList.remove('is-hiding');
+    positionTip();
+    void popout.offsetWidth;
+    popout.classList.add('is-visible');
+    hideTimer = setTimeout(hideTip, SHOW_MS);
+  }
+
+  function scheduleTip(delay) {
+    clearTimeout(showTimer);
+    showTimer = setTimeout(showTip, delay);
+  }
+
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.targetMode;
+    hideTip();
+    if (target) ModeManager.switchTo(target);
+  });
+  closeBtn && closeBtn.addEventListener('click', hideTip);
+  infoBtn && infoBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    toggleDesc();
+  });
+  window.addEventListener('resize', () => {
+    if (!popout.hidden) positionTip();
+  });
+
+  document.addEventListener('jg-mode-applied', e => {
+    const { mode, initial } = e.detail || {};
+    if (initial) {
+      const key = 'jg-mode-tip-' + mode;
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+      scheduleTip(2800);
+    } else {
+      scheduleTip(900);
+    }
+  });
+})();
+
+/* ══════════════════════════════════════════════════════
    CUSTOM CURSOR
    ══════════════════════════════════════════════════════ */
 (function initCursor() {
@@ -247,7 +383,7 @@ const ModeManager = (() => {
     requestAnimationFrame(animCursor);
   })();
 
-  const sel = 'a, button, .chip, .tag, .project-card, .about-card, .clink, .skill-item, .s-project, .mode-toggle, .gdg-id-card, .depth-scene, .event-photo-card, .cisco-badge-sq, .org-item';
+  const sel = 'a, button, .chip, .tag, .project-card, .about-card, .clink, .skill-item, .s-project, .mode-toggle, .gdg-id-card, .depth-scene, .event-photo-card, .cisco-badge-sq, .org-item, .s-affil-sq, .s-badge-sq';
   document.addEventListener('mouseover', e => { if (e.target.closest(sel)) document.body.classList.add('cursor-hover'); });
   document.addEventListener('mouseout',  e => { if (e.target.closest(sel)) document.body.classList.remove('cursor-hover'); });
   document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
@@ -276,22 +412,47 @@ const ModeManager = (() => {
 })();
 
 /* ══════════════════════════════════════════════════════
+   INTRO OVERLAYS — mutual hide + mode-aware init
+   ══════════════════════════════════════════════════════ */
+window._forceHideDevIntro = function() {
+  const intro = document.getElementById('intro');
+  if (!intro) return;
+  if (window._devIntroRaf) cancelAnimationFrame(window._devIntroRaf);
+  window._devIntroRaf = null;
+  intro.classList.add('hide', 'done');
+  intro.style.display = 'none';
+  intro.style.pointerEvents = 'none';
+};
+
+window._forceHideAirIntro = function() {
+  const airIntro = document.getElementById('airIntro');
+  if (!airIntro) return;
+  airIntro.classList.remove('open');
+  airIntro.classList.add('done');
+  airIntro.style.display = 'none';
+  airIntro.style.pointerEvents = 'none';
+};
+
+/* ══════════════════════════════════════════════════════
    DEV MODE INTRO OVERLAY — Space Constellation Network
    ══════════════════════════════════════════════════════ */
 window.playDevIntro = function() {
+  window._forceHideAirIntro();
+
   const intro  = document.getElementById('intro');
   const fill   = document.getElementById('introFill');
   const pctEl  = document.getElementById('introPct');
   const canvas = document.getElementById('introCanvas');
   if (!intro) return;
 
-  intro.classList.remove('hide');
+  intro.classList.remove('hide', 'done');
   intro.style.display = 'flex';
   intro.style.pointerEvents = 'all';
 
   if(fill) fill.style.width = '0%';
   if(pctEl) pctEl.textContent = '0%';
 
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let W, H;
   function resizeI() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
@@ -320,7 +481,6 @@ window.playDevIntro = function() {
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
   }));
 
-  let rafI;
   function drawI() {
     ctx.clearRect(0, 0, W, H);
 
@@ -369,13 +529,13 @@ window.playDevIntro = function() {
       if (n.y < 0 || n.y > H) n.vy *= -1;
     });
 
-    rafI = requestAnimationFrame(drawI);
+    window._devIntroRaf = requestAnimationFrame(drawI);
   }
   drawI();
 
   let progress = 0, done = false;
   let start = null;
-  const DURATION = 2000;
+  const DURATION = 4000;
 
   function tick(now) {
     if (done) return;
@@ -391,7 +551,8 @@ window.playDevIntro = function() {
 
   function dismiss() {
     if (done) return; done = true;
-    cancelAnimationFrame(rafI);
+    if (window._devIntroRaf) cancelAnimationFrame(window._devIntroRaf);
+    window._devIntroRaf = null;
     intro.classList.add('hide');
     setTimeout(() => { intro.style.display = 'none'; }, 550);
   }
@@ -401,21 +562,12 @@ window.playDevIntro = function() {
   document.getElementById('introSkip')?.addEventListener('click', dismiss);
 };
 
-if(ModeManager.getCurrentMode() === 'dev') {
-  window.playDevIntro();
-} else {
-  // Air Mode is default — hide dev intro, play air intro
-  const intro = document.getElementById('intro');
-  if (intro) { intro.style.display = 'none'; intro.classList.add('hide'); }
-  if (typeof window.playAirIntro === 'function') {
-    window.playAirIntro();
-  }
-}
-
 /* ══════════════════════════════════════════════════════
    AIR MODE INTRO OVERLAY — Cloud Drift with Loading
    ══════════════════════════════════════════════════════ */
 window.playAirIntro = function() {
+  window._forceHideDevIntro();
+
   const airIntro = document.getElementById('airIntro');
   const airFill  = document.getElementById('airIntroFill');
   const airPct   = document.getElementById('airIntroPct');
@@ -431,7 +583,7 @@ window.playAirIntro = function() {
 
   let progress = 0, done = false;
   let start = null;
-  const DURATION = 2000;
+  const DURATION = 4000;
 
   function tick(now) {
     if (done) return;
@@ -457,6 +609,12 @@ window.playAirIntro = function() {
   airIntro.addEventListener('click', dismiss);
   document.addEventListener('keydown', dismiss, {once: true});
 };
+
+(function initModeIntro() {
+  const mode = ModeManager.getCurrentMode();
+  if (mode === 'dev') window.playDevIntro();
+  else window.playAirIntro();
+})();
 
 /* ══════════════════════════════════════════════════════
    BACKGROUND CANVAS — Futuristic Particle Network
@@ -1188,16 +1346,38 @@ document.querySelectorAll('#stab-home .s-reveal').forEach(el => airRevealObserve
     
     const isLand = EARTH_MAP[pyCheck][pxCheck] === '#';
     
-    // Random marker on lands (location sharing effect)
-    const isMarker = isLand && (Math.random() > 0.96);
-    
     dots.push({ 
        x, y, z, 
        isLand, 
-       isMarker, 
+       isMarker: false, 
        links: [], 
-       ripple: isMarker ? Math.random() : 0 
+       ripple: 0 
     });
+  }
+
+  // Scatter green location pings across land masses with even spacing
+  const MARKER_COUNT = 22;
+  const MIN_MARKER_DIST_SQ = 0.14 * 0.14;
+  const landIndices = dots.map((d, i) => i).filter(i => dots[i].isLand);
+  for (let i = landIndices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [landIndices[i], landIndices[j]] = [landIndices[j], landIndices[i]];
+  }
+  const markerIndices = [];
+  for (const idx of landIndices) {
+    if (markerIndices.length >= MARKER_COUNT) break;
+    const d = dots[idx];
+    const tooClose = markerIndices.some(ci => {
+      const o = dots[ci];
+      const dx = d.x - o.x, dy = d.y - o.y, dz = d.z - o.z;
+      return dx * dx + dy * dy + dz * dz < MIN_MARKER_DIST_SQ;
+    });
+    if (!tooClose) {
+      markerIndices.push(idx);
+      d.isMarker = true;
+      d.ripple = Math.random();
+      d.rippleSpeed = 0.008 + Math.random() * 0.012;
+    }
   }
   
   // Precompute nearest neighbors for full cyber-network sphere effect
@@ -1219,22 +1399,28 @@ document.querySelectorAll('#stab-home .s-reveal').forEach(el => airRevealObserve
 
   let rotationY = 0;
   const rotationX = 0.3; // Slight tilt
+  let isContactVisible = false;
+
+  const contactPanel = document.getElementById('tab-contact');
+  if (contactPanel) {
+    const visibilityObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => { isContactVisible = entry.isIntersecting; });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    visibilityObserver.observe(contactPanel);
+  }
   
   function draw() {
-    // Only render globe when contact tab is visible (performance)
-    const contactPanel = document.getElementById('tab-contact');
-    const isDevContactVisible = contactPanel && contactPanel.classList.contains('active');
     const isDevMode = ModeManager.getCurrentMode() === 'dev';
-    if (!isDevMode || !isDevContactVisible) {
+    if (!isDevMode || !isContactVisible) {
       requestAnimationFrame(draw);
       return;
     }
     ctx.clearRect(0, 0, w, h);
     
     // Deep core glow
-    const grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, GLOBE_RADIUS * 1.3);
-    grad.addColorStop(0, 'rgba(100, 30, 255, 0.5)');
-    grad.addColorStop(0.4, 'rgba(90, 30, 200, 0.15)');
+    const grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, GLOBE_RADIUS * 1.5);
+    grad.addColorStop(0, 'rgba(120, 45, 255, 0.65)');
+    grad.addColorStop(0.4, 'rgba(95, 35, 210, 0.24)');
     grad.addColorStop(1, 'rgba(90, 30, 200, 0)');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
@@ -1257,7 +1443,7 @@ document.querySelectorAll('#stab-home .s-reveal').forEach(el => airRevealObserve
       
       // Update ripple for markers
       if (dot.isMarker) {
-         dot.ripple += 0.012;
+         dot.ripple += dot.rippleSpeed || 0.012;
          if (dot.ripple > 1) dot.ripple = 0;
       }
       
@@ -1271,10 +1457,10 @@ document.querySelectorAll('#stab-home .s-reveal').forEach(el => airRevealObserve
        const isFront = dot.z < 0;
        
        // Keep land networks bright, but still draw oceans
-       const alphaMult = dot.isLand ? 1 : 0.3;
-       const lineAlpha = isFront ? (0.25 * alphaMult) : (0.01 * alphaMult);
+       const alphaMult = dot.isLand ? 1 : 0.45;
+       const lineAlpha = isFront ? (0.42 * alphaMult) : (0.06 * alphaMult);
        
-       ctx.strokeStyle = `rgba(160, 100, 255, ${lineAlpha})`;
+       ctx.strokeStyle = `rgba(170, 115, 255, ${lineAlpha})`;
        ctx.beginPath();
        
        dot.links.forEach(tOrigDot => {
@@ -1326,10 +1512,10 @@ document.querySelectorAll('#stab-home .s-reveal').forEach(el => airRevealObserve
         ctx.arc(dot.px, dot.py, size * dot.perspective, 0, Math.PI * 2);
         
         if (dot.isLand) {
-           ctx.fillStyle = isFront ? 'rgba(180, 120, 255, 0.9)' : 'rgba(120, 60, 255, 0.15)';
-           if (isFront) { ctx.shadowBlur = 8; ctx.shadowColor = 'rgba(180, 120, 255, 0.8)'; }
+           ctx.fillStyle = isFront ? 'rgba(195, 140, 255, 1)' : 'rgba(140, 80, 255, 0.28)';
+           if (isFront) { ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(190, 135, 255, 0.9)'; }
         } else {
-           ctx.fillStyle = isFront ? 'rgba(100, 60, 200, 0.25)' : 'rgba(80, 40, 180, 0.05)';
+           ctx.fillStyle = isFront ? 'rgba(120, 75, 220, 0.4)' : 'rgba(90, 50, 190, 0.1)';
         }
         ctx.fill();
         ctx.shadowBlur = 0;
@@ -1494,8 +1680,8 @@ const devProjectData = {
   glidego:       { title: "GlideN'Go",     sub: 'Professional Fleet & Cold-Chain Logistics', img: 'Images/Project Pictures/GlideNGo (1).png' },
   lakbay:        { title: 'LAKbayGAbayPh', sub: 'Traversing Project 82 — MapaSayo Generator', img: 'Images/Project Pictures/LAKbayGAbayPh (1).png' },
   ojt:           { title: 'OJT Attendance Tracker', sub: 'OJT Attendance Tracker System', img: 'Images/Project Pictures/OJT ATS (3).png' },
-  passfolio:     { title: 'Passfolio in One', sub: 'Passport-Style Portfolio', img: 'Images/Project Pictures/PassFolio (1).png' },
-  gastadoor:     { title: 'GastaDoor', sub: 'Budget Manager App in your Home', img: 'Images/Project Pictures/GastaDoor (1).jpg' },
+  passfolio:     { title: 'Passfolio in One', sub: 'Passport-Style Portfolio', img: 'Images/Project Pictures/PassFolio Intro.png' },
+  gastadoor:     { title: 'GastaDoor', sub: 'Budget Manager App in your Home', img: 'Images/Project Pictures/GastaDoor (1).png' },
   bugtong2x:     { title: 'Bugtong2x', sub: 'Classic Filipino Riddle Game', img: 'Images/Project Pictures/Bugtong (1).png' }
 };
 
@@ -1504,8 +1690,8 @@ const airProjectData = {
   glidego:       { title: "GlideN'Go",     sub: 'Professional Fleet & Cold-Chain Logistics', img: 'Images/Project Pictures/GlideNGo (1).png' },
   lakbay:        { title: 'LAKbayGAbayPh', sub: 'Traversing Project 82 — MapaSayo Generator', img: 'Images/Project Pictures/LAKbayGAbayPh (1).png' },
   ojt:           { title: '[AT]tendee Management Portal', sub: 'Attendance Tracking System', img: 'Images/Project Pictures/OJT ATS (3).png' },
-  passfolio:     { title: 'PassFolio One', sub: 'Password Portfolio System', img: 'Images/Project Pictures/PassFolio (1).png' },
-  GastaDoor:     { title: 'GastaDoor', sub: 'Budget Manager App in your Home', img: 'Images/Project Pictures/GastaDoor (1).jpg' },
+  passfolio:     { title: 'PassFolio One', sub: 'Password Portfolio System', img: 'Images/Project Pictures/PassFolio Intro.png' },
+  GastaDoor:     { title: 'GastaDoor', sub: 'Budget Manager App in your Home', img: 'Images/Project Pictures/GastaDoor (1).png' },
   bugtong2x:     { title: 'Bugtong2x', sub: 'Classic Filipino Riddle Game', img: 'Images/Project Pictures/Bugtong (1).png' }
 };
 
@@ -1854,58 +2040,95 @@ function renderAirPinned() {
 })();
 
 /* ═══════════════════════════════════════════════════════
-   SPACE ROADMAP — beam fill + satellite activation on scroll
+   LANDSCAPE TIMELINE — year navigation + position tracking
 ═══════════════════════════════════════════════════════ */
 (function () {
-  const roadmap = document.getElementById('spaceRoadmap');
-  const beam    = document.getElementById('srmBeamFill');
-  const beamContainer = roadmap ? roadmap.querySelector('.srm-beam') : null;
-  if (!roadmap || !beam || !beamContainer) return;
+  const roadmap  = document.getElementById('spaceRoadmap');
+  if (!roadmap) return;
+  const track    = document.getElementById('tlTrack');
+  const nav      = document.getElementById('tlNav');
+  const progress = document.getElementById('tlNavProgress');
+  const prevBtn  = document.getElementById('tlPrev');
+  const nextBtn  = document.getElementById('tlNext');
+  if (!track || !nav) return;
 
-  // Set the beam container height to end at the Earth destination (not bottom of roadmap)
-  function setBeamHeight() {
-    const dest = roadmap.querySelector('.srm-destination');
-    if (dest) {
-      const roadmapRect = roadmap.getBoundingClientRect();
-      const destRect = dest.getBoundingClientRect();
-      // Stop beam at the top of the Earth destination section
-      const beamH = destRect.top - roadmapRect.top;
-      beamContainer.style.height = beamH + 'px';
-      beamContainer.style.bottom = 'auto';
-    }
+  const items = Array.from(track.querySelectorAll('.tl-item'));
+  const dots  = Array.from(nav.querySelectorAll('.tl-nav-dot'));
+  const count = items.length;
+  if (!count) return;
+  let active = 0;
+
+  function centerItem(i) {
+    const item = items[Math.max(0, Math.min(i, count - 1))];
+    if (!item) return;
+    const trackRect = track.getBoundingClientRect();
+    const itemRect = item.getBoundingClientRect();
+    const delta = (itemRect.left + itemRect.width / 2) - (trackRect.left + trackRect.width / 2);
+    track.scrollTo({ left: track.scrollLeft + delta, behavior: 'smooth' });
   }
-  setBeamHeight();
-  window.addEventListener('resize', setBeamHeight);
 
-  // Fill beam when roadmap enters view
-  const beamIO = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        setBeamHeight();
-        setTimeout(() => { beam.style.height = '100%'; }, 200);
-        beamIO.unobserve(roadmap);
-      }
+  function setActive(i) {
+    active = Math.max(0, Math.min(i, count - 1));
+    items.forEach((it, idx) => it.classList.toggle('tl-item--infocus', idx === active));
+    dots.forEach((d, idx) => {
+      d.classList.toggle('active', idx === active);
+      d.classList.toggle('done', idx < active);
     });
-  }, { threshold: 0.05 });
-  beamIO.observe(roadmap);
+    if (prevBtn) prevBtn.disabled = active === 0;
+    if (nextBtn) nextBtn.disabled = active === count - 1;
+  }
 
-  // Activate / deactivate each satellite as its node scrolls in/out
-  const nodes = document.querySelectorAll('.srm-node');
-  const satIO = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      const sat = e.target.querySelector('.srm-satellite');
-      if (!sat) return;
-      if (e.isIntersecting) {
-        sat.classList.remove('srm-sat-paused');
-        sat.classList.add('srm-sat-active');
-      } else {
-        sat.classList.remove('srm-sat-active');
-        sat.classList.add('srm-sat-paused');
-      }
+  // Continuous progress bar — follows the exact scroll position for a smooth, firm fill
+  function updateProgress() {
+    if (!progress) return;
+    const max = track.scrollWidth - track.clientWidth;
+    const frac = max > 0 ? Math.min(Math.max(track.scrollLeft / max, 0), 1) : (active / Math.max(count - 1, 1));
+    progress.style.width = (frac * 100) + '%';
+  }
+
+  function activeFromScroll() {
+    const trackRect = track.getBoundingClientRect();
+    const center = trackRect.left + trackRect.width / 2;
+    let best = 0, bestDist = Infinity;
+    items.forEach((it, idx) => {
+      const r = it.getBoundingClientRect();
+      const c = r.left + r.width / 2;
+      const d = Math.abs(c - center);
+      if (d < bestDist) { bestDist = d; best = idx; }
     });
-  }, { threshold: 0.25 });
+    return best;
+  }
 
-  nodes.forEach(node => satIO.observe(node));
+  let raf = null;
+  track.addEventListener('scroll', () => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => { raf = null; updateProgress(); setActive(activeFromScroll()); });
+  }, { passive: true });
+  window.addEventListener('resize', updateProgress);
+
+  dots.forEach((d, idx) => d.addEventListener('click', () => centerItem(idx)));
+  items.forEach((it, idx) => {
+    it.addEventListener('click', () => centerItem(idx));
+    it.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); centerItem(idx); }
+    });
+  });
+  if (prevBtn) prevBtn.addEventListener('click', () => centerItem(active - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => centerItem(active + 1));
+
+  // Start on the current year (2026), falling back to the in-progress milestone
+  let startIdx = items.findIndex(it => it.dataset.year === '2026');
+  if (startIdx < 0) startIdx = items.findIndex(it => it.classList.contains('tl-item--active'));
+  setActive(startIdx >= 0 ? startIdx : 0);
+  updateProgress();
+
+  // Center the starting milestone once the section becomes visible (handles hidden tabs)
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { centerItem(active); updateProgress(); io.unobserve(roadmap); }
+    });
+  }, { threshold: 0.15 });
+  io.observe(roadmap);
 })();
 
 /* ══════════════════════════════════════════════════════
@@ -2225,7 +2448,7 @@ function renderAirPinned() {
       desc: 'A passport-style personal portfolio featuring a travel-themed layout with achievement stamps, visa-page skills, and trip logs as career milestones.',
       badge: '',
       tags: ['HTML','CSS','JavaScript'],
-      thumb: 'Images/Project Pictures/PassFolio (1).png'
+      thumb: 'Images/Project Pictures/PassFolio Intro.png'
     },
     {
       id: 'gastadoor',
@@ -2234,7 +2457,7 @@ function renderAirPinned() {
       desc: 'A budget manager app that helps you track your expenses, savings, and investments with an intuitive Android-friendly interface.',
       badge: '',
       tags: ['Google Apps Script','JSON','Java','Android App'],
-      thumb: 'Images/Project Pictures/GastaDoor (1).jpg'
+      thumb: 'Images/Project Pictures/GastaDoor (1).png'
     },
     {
       id: 'bugtong2x',
@@ -2284,13 +2507,11 @@ function renderAirPinned() {
       card.appendChild(img);
       card.appendChild(label);
 
-      card.addEventListener('click', () => {
-        if (window.openProjectPopoutById) window.openProjectPopoutById(proj.id);
-      });
+      card.addEventListener('click', () => launchCard(card, proj, mode));
       card.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          if (window.openProjectPopoutById) window.openProjectPopoutById(proj.id);
+          launchCard(card, proj, mode);
         }
       });
 
@@ -2298,22 +2519,115 @@ function renderAirPinned() {
     });
   }
 
-  /* ── Pause/resume on hover ── */
+  /* ── Unique click launch transition (card flies to center → opens popout) ── */
+  let carouselLaunching = false;
+  const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function launchCard(card, proj, mode) {
+    const open = () => { if (window.openProjectPopoutById) window.openProjectPopoutById(proj.id); };
+
+    if (prefersReducedMotion) { open(); return; }
+    if (carouselLaunching) return;
+    carouselLaunching = true;
+
+    const isAir = mode === 'air';
+    const scene = card.closest('.carousel3d-scene');
+
+    // Freeze both carousels & dim the scene the card came from
+    document.querySelectorAll('.carousel3d-track').forEach(t => t.classList.add('paused'));
+    if (scene) scene.classList.add('c3d-launching');
+
+    // Snapshot current on-screen position of the (rotating) card
+    const rect = card.getBoundingClientRect();
+    const w = card.offsetWidth || rect.width;
+    const h = card.offsetHeight || rect.height;
+    const startCx = rect.left + rect.width / 2;
+    const startCy = rect.top + rect.height / 2;
+
+    // Build a flat clone to animate toward the viewport center
+    const clone = card.cloneNode(true);
+    clone.className = 'c3d-fly-clone ' + (isAir ? 'c3d-fly-air' : 'c3d-fly-dev');
+    clone.style.left = (startCx - w / 2) + 'px';
+    clone.style.top  = (startCy - h / 2) + 'px';
+    clone.style.width  = w + 'px';
+    clone.style.height = h + 'px';
+    document.body.appendChild(clone);
+
+    // Full-screen burst flash for extra punch
+    const burst = document.createElement('div');
+    burst.className = 'c3d-launch-burst ' + (isAir ? 'is-air' : 'is-dev');
+    document.body.appendChild(burst);
+    burst.animate(
+      [{ opacity: 0 }, { opacity: 1, offset: 0.3 }, { opacity: 0 }],
+      { duration: isAir ? 640 : 560, easing: 'ease-out' }
+    );
+
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    const targetW = Math.min(window.innerWidth * 0.6, 340);
+    const scale = targetW / w;
+    const tx = cx - startCx;
+    const ty = cy - startCy;
+
+    const duration = isAir ? 560 : 480;
+    const midRot = isAir ? -6 : 7;
+
+    const anim = clone.animate([
+      { transform: 'translate(0px,0px) scale(1) rotate(0deg)' },
+      { transform: `translate(${tx * 0.55}px, ${ty * 0.55 - 22}px) scale(${scale * 0.74}) rotate(${midRot}deg)`, offset: 0.55 },
+      { transform: `translate(${tx}px, ${ty}px) scale(${scale}) rotate(0deg)` }
+    ], { duration, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' });
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      open();
+      // Let the popout fade in beneath, then dissolve the clone
+      const out = clone.animate(
+        [{ opacity: 1 }, { opacity: 0 }],
+        { duration: 300, easing: 'ease', fill: 'forwards' }
+      );
+      const cleanup = () => {
+        clone.remove();
+        burst.remove();
+        if (scene) scene.classList.remove('c3d-launching');
+        carouselLaunching = false;
+      };
+      out.onfinish = cleanup;
+      // Safety net if animation events are dropped
+      setTimeout(cleanup, 500);
+    };
+    anim.onfinish = finish;
+    setTimeout(() => { if (carouselLaunching && clone.isConnected) finish(); }, duration + 120);
+  }
+
+  /* ── Pause only while the cursor is over a card; spin continuously otherwise ── */
   function attachHoverPause(sceneEl, trackEl) {
-    const overlay = document.getElementById('projModalOverlay');
-    const isModalOpen = () => overlay && overlay.classList.contains('open');
+    const isPopoutOpen = () => {
+      const pop = document.getElementById('projPopout');
+      return pop && pop.classList.contains('pp-open');
+    };
+    // Keep the ring frozen while a detail popout is open or a launch animation is playing
+    const shouldStayPaused = () => isPopoutOpen() || carouselLaunching;
 
-    sceneEl.addEventListener('pointerenter', () => trackEl.classList.add('paused'));
-    sceneEl.addEventListener('pointerleave', () => {
-      if (!isModalOpen()) trackEl.classList.remove('paused');
+    // Pause the moment the pointer is over an actual card
+    sceneEl.addEventListener('pointerover', e => {
+      if (e.target.closest('.c3d-card')) trackEl.classList.add('paused');
+    });
+    // Resume when the pointer leaves the card (unless something else needs it paused)
+    sceneEl.addEventListener('pointerout', e => {
+      const leftCard = e.target.closest('.c3d-card');
+      const enteredCard = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.c3d-card');
+      if (leftCard && !enteredCard && !shouldStayPaused()) trackEl.classList.remove('paused');
     });
 
-    // Fallback resume if mouseleave is missed or the carousel remains paused after a quick interaction.
-    document.addEventListener('mousemove', () => {
-      if (trackEl.classList.contains('paused') && !isModalOpen() && !sceneEl.matches(':hover')) {
-        trackEl.classList.remove('paused');
-      }
-    });
+    // Safety net: if it's paused but the cursor isn't on a card (and nothing else holds it), resume
+    document.addEventListener('mousemove', e => {
+      if (!trackEl.classList.contains('paused')) return;
+      if (shouldStayPaused()) return;
+      if (!e.target.closest('.c3d-card')) trackEl.classList.remove('paused');
+    }, { passive: true });
   }
 
   /* ── Modal open/close ── */
@@ -2398,11 +2712,13 @@ function renderAirPinned() {
     track.dataset._baselinePps = baselinePps;
 
     function apply() {
-      const pps = parseFloat(track.dataset._baselinePps) || 160;
       // compute the exact pixel shift (half the scrollable width — one sequence)
       const shift = track.scrollWidth * 0.5;
+      // Bail while the track has no layout yet (hidden tab / not-yet-visible mode / images unloaded)
+      if (!shift) return;
       track.style.setProperty('--gallery-shift', Math.round(shift) + 'px');
 
+      const pps = parseFloat(track.dataset._baselinePps) || 160;
       const dur = shift / pps;
       // Use a larger minimum duration on small screens so motion feels slower
       const minDur = window.innerWidth <= 480 ? 12 : 6;
@@ -2415,10 +2731,119 @@ function renderAirPinned() {
       if (!img.complete) img.addEventListener('load', () => setTimeout(apply, 40));
     });
 
+    // Recompute once the track actually gains a width — e.g. when Air Mode / its tab
+    // becomes visible (its size goes from 0 → real), which the initial timer missed.
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(() => apply()).observe(track);
+    }
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) apply(); });
+      }, { threshold: 0.01 });
+      io.observe(track);
+    }
+
     let to;
     window.addEventListener('resize', () => { clearTimeout(to); to = setTimeout(apply, 140); });
 
     // initial apply
     setTimeout(apply, 80);
   });
+})();
+
+/* ═══════════════════════════════════════════════════════
+   EVENT GALLERY — 3D auto-play coverflow
+═══════════════════════════════════════════════════════ */
+(function eventGalleryCoverflow() {
+  const roots = document.querySelectorAll('.eg-coverflow');
+  if (!roots.length) return;
+  roots.forEach(initCoverflow);
+
+  function initCoverflow(root) {
+    const stage = root.querySelector('.eg-stage');
+    if (!stage) return;
+    const cards = Array.from(stage.querySelectorAll('.eg-card'));
+    const n = cards.length;
+    if (!n) return;
+
+    const dotsWrap = root.querySelector('.eg-dots');
+    const prevBtn  = root.querySelector('.eg-prev');
+    const nextBtn  = root.querySelector('.eg-next');
+    const AUTOPLAY_MS = 3200;
+
+    let active = 0;
+    let paused = false;
+    let timer = null;
+
+    // Build dots
+    const dots = [];
+    if (dotsWrap) {
+      cards.forEach((_, i) => {
+        const b = document.createElement('button');
+        b.className = 'eg-dot';
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-label', 'Go to image ' + (i + 1));
+        b.addEventListener('click', () => go(i));
+        dotsWrap.appendChild(b);
+        dots.push(b);
+      });
+    }
+
+    const SPACING = () => Math.min(300, Math.max(150, root.clientWidth * 0.24));
+
+    function layout() {
+      const gap = SPACING();
+      cards.forEach((card, i) => {
+        let off = i - active;
+        if (off >  n / 2) off -= n;   // wrap to the shortest direction
+        if (off < -n / 2) off += n;
+        const abs = Math.abs(off);
+
+        if (abs > 3) {
+          card.style.opacity = '0';
+          card.style.pointerEvents = 'none';
+          card.style.transform = `translateX(${off > 0 ? 140 : -140}%) scale(.5)`;
+          card.classList.remove('eg-active');
+          return;
+        }
+
+        const sign = off === 0 ? 0 : (off > 0 ? 1 : -1);
+        const translate = off * gap;
+        const rot = -sign * Math.min(abs, 3) * 22;
+        const scale = Math.max(0.6, 1 - abs * 0.14);
+        card.style.opacity = abs > 2 ? '0.28' : (abs > 0 ? '0.72' : '1');
+        card.style.filter = abs > 0 ? `brightness(${(1 - abs * 0.12).toFixed(2)})` : 'none';
+        card.style.transform = `translateX(${translate}px) translateZ(${-abs * 130}px) rotateY(${rot}deg) scale(${scale})`;
+        card.style.zIndex = String(100 - abs);
+        card.style.pointerEvents = 'auto';
+        card.classList.toggle('eg-active', off === 0);
+      });
+      dots.forEach((d, i) => d.classList.toggle('active', i === active));
+    }
+
+    function go(i) { active = ((i % n) + n) % n; layout(); restart(); }
+    function next() { active = (active + 1) % n; layout(); }
+    function start() { if (!timer) timer = setInterval(() => { if (!paused) next(); }, AUTOPLAY_MS); }
+    function stop()  { clearInterval(timer); timer = null; }
+    function restart() { stop(); start(); }
+
+    prevBtn && prevBtn.addEventListener('click', () => go(active - 1));
+    nextBtn && nextBtn.addEventListener('click', () => go(active + 1));
+    cards.forEach((c, i) => c.addEventListener('click', () => { if (i !== active) go(i); }));
+
+    root.addEventListener('pointerenter', () => { paused = true; });
+    root.addEventListener('pointerleave', () => { paused = false; });
+    window.addEventListener('resize', layout);
+
+    layout();
+
+    // Only autoplay while visible (perf + relevance)
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { layout(); start(); }
+        else { stop(); }
+      });
+    }, { threshold: 0.12 });
+    io.observe(root);
+  }
 })();

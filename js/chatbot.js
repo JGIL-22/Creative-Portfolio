@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════
-   Gizmo — FurBot AI · Enhanced v6.0
+   Gizmo — FurBot AI · v7.6
    John Gil Mayor Portfolio
-   Bilingual (English + Filipino) · Smarter responses
+   Bilingual (English + Filipino) · Dog mascot · No emojis
    ══════════════════════════════════════════════════════ */
 
 (function initGizmo() {
@@ -17,168 +17,269 @@
 
   let isOpen     = false;
   let hasGreeted = false;
-  let lang       = 'en'; // detected language: 'en' | 'fil'
+  let chipBusy   = false;
+  let lang       = 'en';
   let msgCount   = 0;
   let lastTopic  = null;
 
-  // ── Language Detection ───────────────────────────────
-  const FIL_WORDS = /\b(ano|kumusta|kamusta|sino|saan|kailan|paano|bakit|anong|maganda|meron|may|ba|po|opo|salamat|salamat|hindi|oo|naman|yung|yun|ako|ikaw|siya|kami|tayo|kayo|sila|nag|mag|mga|ng|sa|na|at|kasi|para|lang|dito|doon|talaga|syempre|nandito|pwede|pwedeng|gusto|ayaw|mahal|libre|libre|baka|siguro|palagi|lagi|eto|ito|iyon|hayaan|sige|sure|ganun|ganon|dba|di|wala|meron|merong|bilang|bago|luma|mabilis|mabait|magaling|galing|astig|grabe|sana|nawa)\b/i;
+  const FIL_WORDS = /\b(ano|kumusta|kamusta|sino|saan|kailan|paano|bakit|anong|maganda|meron|may|ba|po|opo|salamat|hindi|oo|naman|yung|yun|ako|ikaw|siya|kami|tayo|kayo|sila|nag|mag|mga|ng|sa|na|at|kasi|para|lang|dito|doon|talaga|syempre|nandito|pwede|pwedeng|gusto|ayaw|baka|siguro|palagi|lagi|eto|ito|iyon|hayaan|sige|ganun|ganon|dba|di|wala|merong|bilang|bago|mabilis|mabait|magaling|galing|astig|grabe|sana|nawa|tulong|tanong|tanungin|portfolio|mode|trabaho|estudyante|graduate|fresh)\b/i;
 
   function detectLang(text) {
     if (FIL_WORDS.test(text)) return 'fil';
-    // Also detect if text contains common Filipino question starters
-    if (/^(ano|kumusta|sino|saan|paano|bakit|maganda|meron)/i.test(text.trim())) return 'fil';
+    if (/^(ano|kumusta|sino|saan|paano|bakit|maganda|meron|tulong)/i.test(text.trim())) return 'fil';
     return 'en';
   }
 
-  // ── Knowledge Base ───────────────────────────────────
   const KB = {
 
     greet: {
       en: [
-        "Hey there! 🐾 I'm **Gizmo**, John Gil's FurBot AI assistant! I know everything about this portfolio. Ask me about his skills, projects, certifications, or how to get in touch!",
-        "Woof! 🦊 Gizmo here — your fluffy AI guide to John Gil Mayor's portfolio! What would you like to know? Try asking about his projects, skills, or the Events tab!",
-        "Hi hi! 🐾 I'm Gizmo! Ask me anything about John Gil — his background, tech stack, certifications, or internship availability. I'm all ears! 👂"
+        "Woof! I'm **Gizmo**, John Gil's FurBot AI. Ask about his skills, projects, certifications, contact info, or about me.",
+        "Hi! **Gizmo** here. I guide visitors through John Gil Mayor's portfolio in English or Filipino. Try asking about his projects, event gallery, or viewing modes.",
+        "Hello! I'm **Gizmo**, John Gil's loyal FurBot. I know this portfolio inside out — background, tech stack, events, and contact details."
       ],
       fil: [
-        "Hoy hoy! 🐾 Ako si **Gizmo**, ang FurBot AI ni John Gil! Alam ko lahat tungkol sa portfolio na ito. Tanungin mo ako tungkol sa kanyang skills, projects, o kung paano makipag-ugnayan sa kanya!",
-        "Woof! 🦊 Gizmo ako! Ang iyong malikhaing gabay sa portfolio ni John Gil Mayor. Ano ang gusto mong malaman? Pwede kang magtanong tungkol sa kanyang mga projects, skills, o certifications!",
-        "Kumusta! 🐾 Gizmo ang pangalan ko! Magtanong ka tungkol kay John Gil — background niya, tech skills, certifications, o kung available siya para sa internship. Nandito lang ako! 👂"
+        "Woof! Ako si **Gizmo**, ang FurBot AI ni John Gil. Tanungin mo ako tungkol sa skills, projects, certifications, contact info, o tungkol sa akin.",
+        "Kumusta! **Gizmo** ako. Gabay ko kayo sa portfolio ni John Gil Mayor sa English o Filipino. Subukan mong magtanong tungkol sa projects, event gallery, o viewing modes.",
+        "Hello! Ako si **Gizmo**, ang tapat na FurBot ni John Gil. Alam ko ang buong portfolio — background, tech stack, events, at contact details."
       ]
     },
 
     name: {
-      en: "I'm **Gizmo** 🦊 — John Gil's personal FurBot AI! I'm a virtual fox mascot built to help visitors learn about John Gil's portfolio, projects, and background. I speak both English and Filipino! 🐾",
-      fil: "Ako si **Gizmo** 🦊 — ang personal na FurBot AI ni John Gil! Isang virtual na fox mascot na ginawa para tulungan ang mga bisita na matuto tungkol sa portfolio, projects, at background ni John Gil. Nagsasalita ako ng English at Filipino! 🐾"
+      en: "Woof! I'm **Gizmo** — John Gil's FurBot AI and loyal **dog**. I help visitors explore this portfolio in **English** or **Filipino**. Ask me about John Gil's skills, projects, modes, or contact info — or ask about **me**.",
+      fil: "Woof! Ako si **Gizmo** — ang FurBot AI at tapat na **aso** ni John Gil. Tinutulungan ko ang mga bisita sa portfolio na ito sa **English** o **Filipino**. Tanungin mo ako tungkol sa skills, projects, modes, o contact ni John Gil — o tungkol sa **akin**."
+    },
+
+    gizmo: {
+      en: "**Gizmo Mayor — Pet Passport (DA-BAI)**\n\n**Full name:** Gizmo Mayor\n**Species:** Canine\n**Sex:** Male\n**Breed:** Japanese Spitz and Husky mix\n**Color:** Creamy white\n**Birthdate:** March 7, 2024\n**Origin:** Philippines\n**Furparent:** John Gil Mayor\n**Address:** Barangay San Isidro, Paranaque City, Metro Manila\n**Issued:** March 20, 2024\n**Expires:** March 20, 2029\n\nPassport photo: Gizmo Furbot AI/Gizmo Passport.png",
+      fil: "**Gizmo Mayor — Pet Passport (DA-BAI)**\n\n**Buong pangalan:** Gizmo Mayor\n**Uri ng hayop:** Aso (Canine)\n**Kasarian:** Lalaki\n**Lahi:** Japanese Spitz at Husky mix\n**Kulay:** Creamy white\n**Kapanganakan:** March 7, 2024\n**Pinagmulan:** Pilipinas\n**Furparent:** John Gil Mayor\n**Address:** Barangay San Isidro, Paranaque City, Metro Manila\n**Petsa ng pagkakaloob:** March 20, 2024\n**Petsa ng pag-expire:** March 20, 2029\n\nLarawan: Gizmo Furbot AI/Gizmo Passport.png"
     },
 
     who: {
-      en: "**John Gil Mayor** is a graduating BSIT student from the **Polytechnic University of the Philippines (PUP)**. 🎓\n\nHe's a passionate frontend developer and UI/UX designer with hands-on experience building civic tech platforms, government systems, and interactive web applications.\n\nCurrently seeking internship or junior developer roles in Metro Manila! 💼",
-      fil: "Si **John Gil Mayor** ay isang graduating na BSIT student mula sa **Polytechnic University of the Philippines (PUP)**. 🎓\n\nSiya ay isang passionate na frontend developer at UI/UX designer na may hands-on na karanasan sa paggawa ng civic tech platforms, government systems, at interactive web apps.\n\nNaghahanap siya ngayon ng internship o junior developer roles sa Metro Manila! 💼"
+      en: "**John Gil Mayor** is a **fresh graduate in BSIT** from the **Polytechnic University of the Philippines (PUP) Paranaque**, Class of 2026.\n\nHe is a Full-Stack developer and UI/UX designer with hands-on experience in civic tech, government systems, hackathon builds, and mobile applications.\n\nHe is open to junior developer roles, and entry-level IT positions in Metro Manila.",
+      fil: "Si **John Gil Mayor** ay **fresh graduate na BSIT** mula sa **Polytechnic University of the Philippines (PUP) Paranaque**, Class of 2026.\n\nSiya ay Full-Stack developer at UI/UX designer na may karanasan sa civic tech, government systems, hackathon builds, at mobile applications.\n\nBukas siya sa junior developer roles, at entry-level IT positions sa Metro Manila."
     },
 
     skills: {
-      en: "Here's John Gil's tech stack! 💻\n\n**Languages & Markup:**\n🌐 HTML/CSS — 90% · Advanced layouts & animations\n⚡ JavaScript/TypeScript — 80% · DOM, APIs, logic\n🐍 Python — 75% · Data, scripting, Flask\n🗄️ MySQL/SupaBase — 70% · Database design & queries\n\n**Frameworks & Tools:**\n⚙️ Node.js, Express, Vite, Angular\n🎨 UI/UX Design (Figma) — 78%\n🔒 Cybersecurity Basics — 65%\n🔗 REST APIs · Git/GitHub · Agile/Scrum\n\nHe builds things that look great AND work well! ✨",
-      fil: "Ito ang tech stack ni John Gil! 💻\n\n**Languages & Markup:**\n🌐 HTML/CSS — 90% · Advanced layouts at animations\n⚡ JavaScript/TypeScript — 80% · DOM, APIs, logic\n🐍 Python — 75% · Data, scripting, Flask\n🗄️ MySQL/SupaBase — 70% · Database design at queries\n\n**Frameworks & Tools:**\n⚙️ Node.js, Express, Vite, Angular\n🎨 UI/UX Design (Figma) — 78%\n🔒 Cybersecurity Basics — 65%\n🔗 REST APIs · Git/GitHub · Agile/Scrum\n\nGumagawa siya ng mga bagay na maganda at gumagana rin! ✨"
-    },
-
-    projects: {
-      en: "John Gil's proudest builds! 🚀\n\n📌 **CLICKizenship** — Barangay digital services platform with QR-based request flows for local government use. *(Capstone Extension Project 2026)*\n\n📌 **PVC Validity Extension System** — Government ID validation dashboard with structured form workflows and approval pipeline.\n\n📌 **OJT Attendance Tracker** — QR-based attendance system with real-time logging, report generation & admin controls.\n\n📌 **Passfolio** — Passport-themed personal portfolio with achievement stamps.\n\n📌 **Data Science Visualizations** — Python/matplotlib academic mini-projects.\n\nWant details on any of these? Just ask! 🐾",
-      fil: "Ang mga pinaka-proud na ginawa ni John Gil! 🚀\n\n📌 **CLICKizenship** — Barangay digital services platform na may QR-based na request flows para sa local government. *(Capstone Extension Project 2026)*\n\n📌 **PVC Validity Extension System** — Government ID validation dashboard na may structured form workflows at approval pipeline.\n\n📌 **OJT Attendance Tracker** — QR-based na attendance system na may real-time logging, report generation at admin controls.\n\n📌 **Passfolio** — Passport-themed personal portfolio na may achievement stamps.\n\n📌 **Data Science Visualizations** — Python/matplotlib academic mini-projects.\n\nGusto mo bang malaman ang detalye ng isa sa mga ito? Itanong mo lang! 🐾"
-    },
-
-    contact: {
-      en: "Here's how to reach John Gil! 📬\n\n✉️ **Email:** jmayor.devhub@gmail.com\n📞 **Phone:** 09692980415\n📍 **Location:** Paranaque City, Metro Manila, Philippines\n🐙 **GitHub:** github.com/JGIL-22\n💼 **LinkedIn:** linkedin.com/in/johngil-mayor22\n📘 **Facebook:** facebook.com/JgTrek\n📸 **Instagram:** instagram.com/jm_voyor\n\nFeel free to send him a message directly from the **Contact tab** too! 🐾",
-      fil: "Ganito makipag-ugnayan kay John Gil! 📬\n\n✉️ **Email:** jmayor.devhub@gmail.com\n📞 **Phone:** 09692980415\n📍 **Location:** Paranaque City, Metro Manila, Philippines\n🐙 **GitHub:** github.com/JGIL-22\n💼 **LinkedIn:** linkedin.com/in/johngil-mayor22\n📘 **Facebook:** facebook.com/JgTrek\n📸 **Instagram:** instagram.com/jm_voyor\n\nPwede ka ring mag-message sa kanya direkta mula sa **Contact tab**! 🐾"
-    },
-
-    hire: {
-      en: "John Gil is **actively open to opportunities!** 🙌\n\nHe's looking for:\n💼 IT internships\n🖥️ Junior frontend / full-stack developer roles\n🎨 UI/UX design positions\n🤝 Collaborative open-source projects\n\nHe's based in **Paranaque City, Metro Manila** and can work onsite or remote. Reach him at **jmayor.devhub@gmail.com** or **09692980415**! Don't be shy — he's friendly! 😊",
-      fil: "Si John Gil ay **aktibong naghahanap ng trabaho!** 🙌\n\nHinahanap niya ang:\n💼 IT internships\n🖥️ Junior frontend / full-stack developer roles\n🎨 UI/UX design positions\n🤝 Collaborative open-source projects\n\nNakatira siya sa **Paranaque City, Metro Manila** at pwedeng magtrabaho onsite o remote. Makipag-ugnayan sa kanya sa **jmayor.devhub@gmail.com** o **09692980415**! Huwag mahiyang makipag-ugnayan — mabait siya! 😊"
-    },
-
-    events: {
-      en: "John Gil attended some amazing events in 2026! 📸\n\n🔬 **Research Colloquium 2026** — PUP Paranaque Campus. Academic research showcase.\n\n🌌 **Cosmos 2026** — PUP Manila. Tech conference exploring possibilities in innovation.\n\n⭐ **Stellar Bootcamp 2026** — White Cloak Technologies Inc., Ortigas. Hands-on tech bootcamp.\n\nHead over to the **Events tab** in Dev Mode to see actual photos from each event! 📷",
-      fil: "Nagsali si John Gil sa mga kamangha-manghang events noong 2026! 📸\n\n🔬 **Research Colloquium 2026** — PUP Paranaque Campus. Academic research showcase.\n\n🌌 **Cosmos 2026** — PUP Manila. Tech conference tungkol sa innovation.\n\n⭐ **Stellar Bootcamp 2026** — White Cloak Technologies Inc., Ortigas. Hands-on tech bootcamp.\n\nPuntahan ang **Events tab** sa Dev Mode para makita ang mga tunay na larawan mula sa bawat event! 📷"
-    },
-
-    gdg: {
-      en: "John Gil is a proud member of **Google Developer Groups (GDG) — PUP Chapter**! 🌟\n\nGDG is a community of developers supported by Google where students explore technology, share knowledge, and collaborate on projects. His GDG ID card is showcased on the Home tab in Dev Mode! 🪪",
-      fil: "Si John Gil ay isang proud na miyembro ng **Google Developer Groups (GDG) — PUP Chapter**! 🌟\n\nAng GDG ay isang komunidad ng mga developer na sinusuportahan ng Google kung saan nag-eexplore ang mga estudyante ng teknolohiya, nagbabahagi ng kaalaman, at nagkokolabora sa mga project. Ang kanyang GDG ID card ay makikita sa Home tab ng Dev Mode! 🪪"
-    },
-
-    certifications: {
-      en: "John Gil's credentials and badges! 🏅\n\n📜 **Cisco Networking Basics** — Cisco NetAcad\n📜 **Introduction to Cybersecurity** — Cisco NetAcad (2026)\n📜 **Python Essentials** — Cisco NetAcad\n🎖️ **Cisco NetAcad Badges** — Multiple earned\n🥇 **Capstone Extension Project 2026** — CLICKizenship\n🏆 **President's Lister** — PUP Paranaque (2023–2026)\n\nCheck the **About tab** in Air Mode to see them displayed! 🐾",
-      fil: "Ang mga credentials at badges ni John Gil! 🏅\n\n📜 **Cisco Networking Basics** — Cisco NetAcad\n📜 **Introduction to Cybersecurity** — Cisco NetAcad (2026)\n📜 **Python Essentials** — Cisco NetAcad\n🎖️ **Cisco NetAcad Badges** — Maraming nakuha\n🥇 **Capstone Extension Project 2026** — CLICKizenship\n🏆 **President's Lister** — PUP Paranaque (2023–2026)\n\nTingnan ang **About tab** sa Air Mode para makita ang mga ito! 🐾"
-    },
-
-    organizations: {
-      en: "John Gil is affiliated with several organizations! 🏛️\n\n🔵 Google Developer Groups (GDG) — PUP Chapter\n🔵 Cisco NetAcad\n🔵 PUP ICTSO\n🔵 IT Students' Association\n🔵 Cybersecurity Club\n🔵 Web Dev Society\n\nHe's passionate about building community alongside building software! 🤝",
-      fil: "Si John Gil ay kabilang sa maraming organisasyon! 🏛️\n\n🔵 Google Developer Groups (GDG) — PUP Chapter\n🔵 Cisco NetAcad\n🔵 PUP ICTSO\n🔵 IT Students' Association\n🔵 Cybersecurity Club\n🔵 Web Dev Society\n\nMahal niya ang pagbuo ng komunidad kasabay ng pagbuo ng software! 🤝"
+      en: "**Skills & Tech Stack**\n\n**Focus:** Full-Stack Development, UI/UX Designing, Cybersecurity, Cloud Technologies, Project Management\n\n**Stack:** HTML/CSS, JavaScript/TypeScript, Python, PHP, SQL, React, Node.js, Flask, Figma, MySQL, Git\n\n**Tools:** Jira, Trello, Agile/Scrum\n\nSee **About** for skill bars and certifications.",
+      fil: "**Skills & Tech Stack**\n\n**Focus:** Full-Stack Development, UI/UX Designing, Cybersecurity, Cloud Technologies, Project Management\n\n**Stack:** HTML/CSS, JavaScript/TypeScript, Python, PHP, SQL, React, Node.js, Flask, Figma, MySQL, Git\n\n**Tools:** Jira, Trello, Agile/Scrum\n\nTingnan ang **About** para sa skill bars at certifications."
     },
 
     mode: {
-      en: "This portfolio has **two amazing modes!** 🎨\n\n🌙 **Dev Mode** — Dark techy theme with canvas animations, glitch effects, GDG ID card, stories panel, events gallery, and code snippets. Built for developers!\n\n☀️ **Air Mode** — Clean, professional corporate theme with certifications, achievements, and a formal layout. Built for recruiters!\n\nClick the **toggle icon** in the top-right corner of the navbar to switch! It has a smooth curtain transition! ✨",
-      fil: "Ang portfolio na ito ay may **dalawang napakagandang mode!** 🎨\n\n🌙 **Dev Mode** — Dark na techy theme na may canvas animations, glitch effects, GDG ID card, stories panel, events gallery, at code snippets. Para sa mga developer!\n\n☀️ **Air Mode** — Malinis at propesyonal na corporate theme na may certifications, achievements, at formal na layout. Para sa mga recruiter!\n\nI-click ang **toggle icon** sa kanang sulok ng navbar para lumipat! May smooth na curtain transition ito! ✨"
+      en: "**Two Viewing Modes**\n\n__MODE_DEV__\n\n__MODE_AIR__\n\nToggle with the rocket/windmill button, top-right.",
+      fil: "**Dalawang Viewing Mode**\n\n__MODE_DEV__\n\n__MODE_AIR__\n\nLumipat gamit ang rocket/windmill button sa kanang itaas."
     },
 
-    python: {
-      en: "John Gil uses **Python** for several things! 🐍\n\n- Data analysis with **pandas** and **numpy**\n- Visualization with **matplotlib** and **seaborn**\n- Backend scripting with **Flask**\n- Automation scripts and QR-code generation\n\nHis OJT Attendance Tracker system was built using Python + Flask! Check the **Skills section** in Dev Mode to see a live Python code snippet he wrote. 💻",
-      fil: "Ginagamit ni John Gil ang **Python** para sa maraming bagay! 🐍\n\n- Data analysis gamit ang **pandas** at **numpy**\n- Visualization gamit ang **matplotlib** at **seaborn**\n- Backend scripting gamit ang **Flask**\n- Automation scripts at QR-code generation\n\nAng kanyang OJT Attendance Tracker system ay ginawa gamit ang Python + Flask! Tingnan ang **Skills section** sa Dev Mode para makita ang live na Python code snippet na sinulat niya. 💻"
+    projects: {
+      en: "John Gil's featured projects (3D carousel in **Works** for both modes):\n\n**CLICKizenship** — Barangay digital services with QR flows and admin portal. Capstone Extension Project 2026.\n**GlideN'Go** — Fleet and cold-chain logistics app. GDG Build with AI Mini Hackathon **Champion** 2026.\n**LAKbayGAbayPh** — MapaSayo generator for Traversing Project 82.\n**OJT Attendance Tracker** — QR-based attendance with reports and admin controls.\n**PassFolio / Passfolio in One** — Passport-style portfolio with achievement stamps.\n**GastaDoor** — Home budget manager app (Google Apps Script, JSON, Java, Android).\n**Bugtong2x** — Classic Filipino riddle game.\n\nClick any card in the carousel for full details and screenshots.",
+      fil: "Featured projects ni John Gil (3D carousel sa **Works** para sa both modes):\n\n**CLICKizenship** — Barangay digital services na may QR flows at admin portal. Capstone Extension Project 2026.\n**GlideN'Go** — Fleet at cold-chain logistics app. **Champion** sa GDG Build with AI Mini Hackathon 2026.\n**LAKbayGAbayPh** — MapaSayo generator para sa Traversing Project 82.\n**OJT Attendance Tracker** — QR-based attendance na may reports at admin controls.\n**PassFolio** — Passport-style portfolio na may achievement stamps.\n**GastaDoor** — Home budget manager app.\n**Bugtong2x** — Classic Filipino riddle game.\n\nI-click ang card sa carousel para sa buong detalye at screenshots."
+    },
+
+    contact: {
+      en: "**Contact John Gil Mayor**\n\n**Email:** jmayor.devhub@gmail.com\n**Phone:** 09692980415\n**LinkedIn:** linkedin.com/in/john-myr22/\n**GitHub:** github.com/JGIL-22\n**Location:** Paranaque City, Metro Manila",
+      fil: "**Contact John Gil Mayor**\n\n**Email:** jmayor.devhub@gmail.com\n**Phone:** 09692980415\n**LinkedIn:** linkedin.com/in/john-myr22/\n**GitHub:** github.com/JGIL-22\n**Location:** Paranaque City, Metro Manila"
+    },
+
+    hire: {
+      en: "John Gil is **actively open to opportunities** as a fresh graduate.\n\nLooking for:\n- IT internships\n- Junior frontend / full-stack developer roles\n- UI/UX design positions\n- Collaborative projects and junior IT roles\n\nBased in **Paranaque City, Metro Manila** — open to onsite or remote.\n**Email:** jmayor.devhub@gmail.com | **Phone:** 09692980415",
+      fil: "Si John Gil ay **aktibong naghahanap ng oportunidad** bilang fresh graduate.\n\nHinahanap:\n- IT internships\n- Junior frontend / full-stack developer roles\n- UI/UX design positions\n- Collaborative projects at junior IT roles\n\nNakatira sa **Paranaque City, Metro Manila** — bukas sa onsite o remote.\n**Email:** jmayor.devhub@gmail.com | **Phone:** 09692980415"
+    },
+
+    events: {
+      en: "John Gil's **Event Gallery** (3D coverflow in Dev **Events** tab and Air **About** section) highlights:\n\n- GDG Cloud Manila and iAcademy Nexus\n- AWS Headquarters, BGC, Taguig\n- Philippine Blockchain Week 2026\n- Stellar PH x PBW 2026 — Ecosystem Day Winners and 3rd Place in Product Pitching\n- Cosmos 2026 GDG Pilot Event\n- Stellar Bootcamp 2026 with Google Developer Group\n- GDG Build with AI Mini Hackathon 2026 (GlideN'Go champion)\n- Capstone project and thesis defense\n\nPriority photos: Event Gallery images 3 through 7.",
+      fil: "Ang **Event Gallery** ni John Gil (3D coverflow sa Dev **Events** at Air **About**) ay may:\n\n- GDG Cloud Manila at iAcademy Nexus\n- AWS Headquarters, BGC, Taguig\n- Philippine Blockchain Week 2026\n- Stellar PH x PBW 2026 — Ecosystem Day Winners at 3rd Place sa Product Pitching\n- Cosmos 2026 GDG Pilot Event\n- Stellar Bootcamp 2026 kasama ang Google Developer Group\n- GDG Build with AI Mini Hackathon 2026 (champion GlideN'Go)\n- Capstone project at thesis defense\n\nPriority photos: Event Gallery images 3 hanggang 7."
+    },
+
+    certifications: {
+      en: "John Gil's **certifications** (see About in both modes):\n\n- Introduction to Cybersecurity — Cisco Networking Academy (2026)\n- Google Developer Group Build with AI Hackathon — **Champion** (2026)\n- Introduction to Fundamentals of Databases — Simplilearn | SkillUP (2024)\n- Transition to Web3 — Blockchain Basics — RiseIn | Stellar (2026)\n- Cyber Threat Intelligence Analysis (CTIA) Level III — TESDA | AMA (coming soon)\n- Modern Web Development, Bootstrap, Tailwind CSS, and PHP Basics — Ethel CPS (2026)\n- Network Support and Security — Cisco NetAcad (2026)\n- Responsive Web Design — freeCodeCamp (2026)\n- CyberSmart Pilipinas — DICT & ILCDB (2026)\n- Claude and Claude Code 101 — Anthropic (2026)\n\nBadges are also shown in Air Mode.",
+      fil: "Mga **certification** ni John Gil (tingnan ang About sa both modes):\n\n- Introduction to Cybersecurity — Cisco Networking Academy (2026)\n- GDG Build with AI Hackathon — **Champion** (2026)\n- Introduction to Fundamentals of Databases — Simplilearn | SkillUP (2024)\n- Transition to Web3 — Blockchain Basics — RiseIn | Stellar (2026)\n- CTIA Level III — TESDA | AMA (coming soon)\n- Modern Web Development, Bootstrap, Tailwind CSS, PHP — Ethel CPS (2026)\n- Network Support and Security — Cisco NetAcad (2026)\n- Responsive Web Design — freeCodeCamp (2026)\n- CyberSmart Pilipinas — DICT & ILCDB (2026)\n- Claude and Claude Code 101 — Anthropic (2026)\n\nMay badges din sa Air Mode."
+    },
+
+    gdg: {
+      en: "John Gil is active in **Google Developer Groups (GDG)** and related communities.\n\n- GDG Build with AI Mini Hackathon **Champion** 2026\n- GDG Cloud Manila and iAcademy Nexus events\n- Cosmos 2026 GDG Pilot Event\n- His **GDG ID card** is on the Dev Mode Home section\n- Affiliations marquee: GDG, DevKada Tech Community, AWS Cloud Clubs, CCIS, PUP",
+      fil: "Aktibo si John Gil sa **Google Developer Groups (GDG)** at related communities.\n\n- **Champion** sa GDG Build with AI Mini Hackathon 2026\n- GDG Cloud Manila at iAcademy Nexus events\n- Cosmos 2026 GDG Pilot Event\n- Ang **GDG ID card** ay nasa Dev Mode Home section\n- Affiliations: GDG, DevKada Tech Community, AWS Cloud Clubs, CCIS, PUP"
+    },
+
+    organizations: {
+      en: "John Gil's affiliations:\n\n- Polytechnic University of the Philippines (PUP) — BSIT\n- Google Developer Group (GDG)\n- DevKada Tech Community\n- CCIS Department\n- AWS Cloud Clubs\n- Cisco NetAcad (certifications)\n\nHe values community involvement alongside software development.",
+      fil: "Mga affiliation ni John Gil:\n\n- Polytechnic University of the Philippines (PUP) — BSIT\n- Google Developer Group (GDG)\n- DevKada Tech Community\n- CCIS Department\n- AWS Cloud Clubs\n- Cisco NetAcad (certifications)\n\nPinahahalagahan niya ang community involvement kasabay ng software development."
     },
 
     school: {
-      en: "John Gil studies at the **Polytechnic University of the Philippines (PUP)** — one of the largest state universities in the Philippines! 🎓\n\nHe's under the **College of Computer and Information Sciences (CCIS)**, pursuing **Bachelor of Science in Information Technology (BSIT)**. Graduating Class of 2026! 📚",
-      fil: "Nag-aaral si John Gil sa **Polytechnic University of the Philippines (PUP)** — isa sa pinakamalaking state university sa Pilipinas! 🎓\n\nSiya ay nasa **College of Computer and Information Sciences (CCIS)**, kumukuha ng **Bachelor of Science in Information Technology (BSIT)**. Graduating Class of 2026! 📚"
+      en: "John Gil completed **BSIT** at the **Polytechnic University of the Philippines (PUP) Paranaque** under **CCIS** — **Fresh Graduate, Class of 2026**.\n\nHe was **President's Lister** from 2023 to 2026.",
+      fil: "Natapos ni John Gil ang **BSIT** sa **Polytechnic University of the Philippines (PUP) Paranaque** sa ilalim ng **CCIS** — **Fresh Graduate, Class of 2026**.\n\nSiya ay **President's Lister** mula 2023 hanggang 2026."
     },
 
     location: {
-      en: "John Gil is based in **Paranaque City, Metro Manila, Philippines** (ZIP: 1700). 📍\n\nHe's open to working onsite in Metro Manila or fully remote for the right opportunity! 🗺️",
-      fil: "Si John Gil ay nakatira sa **Paranaque City, Metro Manila, Philippines** (ZIP: 1700). 📍\n\nBukas siya sa pag-trabaho onsite sa Metro Manila o fully remote para sa tamang oportunidad! 🗺️"
+      en: "John Gil is based in **Paranaque City, Metro Manila, Philippines**. Open to onsite work in Metro Manila or remote opportunities.",
+      fil: "Nakatira si John Gil sa **Paranaque City, Metro Manila, Philippines**. Bukas sa onsite sa Metro Manila o remote opportunities."
     },
 
     achievements: {
-      en: "John Gil's top achievements! 🏆\n\n🏆 **President's Lister** — PUP Paranaque (2023–2026)\n🥇 **Capstone Extension Project Award 2026** — CLICKizenship chosen as official Extension Project\n📜 **Cisco Cybersecurity Certification** — Completed 2026\n🌌 **Cosmos 2026 Participant** — Tech conference attendee\n⭐ **Stellar Bootcamp Graduate** — White Cloak Technologies Inc.\n\nHe's consistent both in academics and extracurriculars! 💪",
-      fil: "Ang mga pinakamataas na tagumpay ni John Gil! 🏆\n\n🏆 **President's Lister** — PUP Paranaque (2023–2026)\n🥇 **Capstone Extension Project Award 2026** — Ang CLICKizenship ay pinili bilang opisyal na Extension Project\n📜 **Cisco Cybersecurity Certification** — Natapos 2026\n🌌 **Cosmos 2026 Participant** — Tech conference attendee\n⭐ **Stellar Bootcamp Graduate** — White Cloak Technologies Inc.\n\nKonsistente siya sa academics at extracurriculars! 💪"
+      en: "Top achievements:\n\n- **President's Lister** — PUP Paranaque (2023–2026)\n- **Capstone Extension Project 2026** — CLICKizenship\n- **GDG Build with AI Hackathon Champion** 2026 — GlideN'Go\n- **Stellar PH x PBW 2026** — Ecosystem Day Winners, 3rd Place Product Pitching\n- Cisco cybersecurity and networking certifications (2026)\n- Stellar Bootcamp 2026 — White Cloak Technologies\n- Cosmos 2026 participant",
+      fil: "Mga pangunahing achievement:\n\n- **President's Lister** — PUP Paranaque (2023–2026)\n- **Capstone Extension Project 2026** — CLICKizenship\n- **GDG Build with AI Hackathon Champion** 2026 — GlideN'Go\n- **Stellar PH x PBW 2026** — Ecosystem Day Winners, 3rd Place Product Pitching\n- Cisco cybersecurity at networking certifications (2026)\n- Stellar Bootcamp 2026 — White Cloak Technologies\n- Cosmos 2026 participant"
+    },
+
+    python: {
+      en: "John Gil uses **Python** for data work, Flask backends, automation, and academic projects. The Dev Mode **About** section includes a live Python code viewer. The OJT Attendance Tracker uses Python + Flask.",
+      fil: "Ginagamit ni John Gil ang **Python** para sa data work, Flask backends, automation, at academic projects. May live Python code viewer sa Dev Mode **About**. Ang OJT Attendance Tracker ay gumagamit ng Python + Flask."
+    },
+
+    resume: {
+      en: "You can download John Gil's resume from the **Contact** section in Dev Mode — file: **JohnGilMayor_Dev_Resume.pdf**. You can also email him at jmayor.devhub@gmail.com.",
+      fil: "Pwede mong i-download ang resume ni John Gil sa **Contact** section ng Dev Mode — file: **JohnGilMayor_Dev_Resume.pdf**. Pwede ring mag-email sa jmayor.devhub@gmail.com."
     },
 
     fun: {
       en: [
-        "Fun fact! 🐾 John Gil built this entire portfolio from scratch using **pure HTML, CSS, and JavaScript** — no heavy frameworks! That means every animation, transition, and effect you see is hand-crafted. 🎨",
-        "Did you know? 🦊 John Gil's capstone project **CLICKizenship** was actually selected as an **Extension Project for 2026** — meaning it's going to help a real barangay community! Pretty cool, right?",
-        "Woof! ⚡ John Gil can both **design and code** — a rare combo! He uses Figma for wireframes and prototypes, then brings them to life with HTML, CSS, and JS himself.",
-        "Here's a fun one! 🐾 This portfolio has **two full modes** — Dev Mode (dark & techy) and Air Mode (clean & corporate). Both are completely different in look, feel, and content. All built in one HTML file!",
-        "Cool fact! 🌟 John Gil is a **President's Lister** — meaning he maintained top academic standing throughout his BSIT program at PUP from 2023 to 2026. Books AND code! 📚💻"
+        "John Gil built this entire portfolio in **pure HTML, CSS, and JavaScript** — including two complete viewing modes, 3D carousels, event gallery coverflow, and me, Gizmo the dog.",
+        "His capstone **CLICKizenship** was selected as an **Extension Project for 2026** to serve a real barangay community.",
+        "He both **designs in Figma** and **codes the UI himself** — a useful combo for product-minded developers.",
+        "The portfolio uses **continuous scroll** — all sections on one page with side navigation dots in both modes."
       ],
       fil: [
-        "Fun fact! 🐾 Ginawa ni John Gil ang buong portfolio na ito mula sa simula gamit ang **pure HTML, CSS, at JavaScript** — walang mabibigat na frameworks! Ibig sabihin, bawat animation, transition, at effect na nakikita mo ay ginawa ng kanyang sariling kamay. 🎨",
-        "Alam mo ba? 🦊 Ang capstone project ni John Gil na **CLICKizenship** ay napili bilang **Extension Project para sa 2026** — ibig sabihin, makakatulong ito sa isang tunay na barangay community! Astig 'di ba?",
-        "Woof! ⚡ Kaya ni John Gil ang parehong **mag-design at mag-code** — bihirang kombinasyon! Gumagamit siya ng Figma para sa wireframes at prototypes, tapos binibigayan niya ito ng buhay gamit ang HTML, CSS, at JS.",
-        "Fun fact! 🐾 Ang portfolio na ito ay may **dalawang buong mode** — Dev Mode (dark at techy) at Air Mode (malinis at corporate). Magkaiba ang hitsura, pakiramdam, at nilalaman ng dalawa. Lahat ay ginawa sa iisang HTML file!",
-        "Cool fact! 🌟 Si John Gil ay isang **President's Lister** — ibig sabihin, pinananatili niya ang pinakamataas na academic standing sa kanyang BSIT program sa PUP mula 2023 hanggang 2026. Books AT code! 📚💻"
+        "Ginawa ni John Gil ang buong portfolio sa **pure HTML, CSS, at JavaScript** — kasama ang dalawang viewing modes, 3D carousels, event gallery coverflow, at ako, si Gizmo na aso.",
+        "Ang capstone niyang **CLICKizenship** ay napili bilang **Extension Project para sa 2026** para sa tunay na barangay community.",
+        "Kaya niyang **mag-design sa Figma** at **mag-code ng UI** — magandang kombinasyon para sa product-minded developers.",
+        "Gumagamit ang portfolio ng **continuous scroll** — lahat ng sections sa isang page na may side navigation dots."
       ]
     },
 
     help: {
-      en: "Here's what I can tell you about! 🐾\n\n🛠️ **Skills** — Tech stack, languages, tools\n📁 **Projects** — CLICKizenship, OJT Tracker & more\n🎓 **About** — Background, school, PUP\n🏅 **Certifications** — Cisco, badges, credentials\n🏆 **Achievements** — Awards, recognitions\n📅 **Events** — Colloquium, Cosmos, Stellar Bootcamp\n📩 **Contact** — Email, phone, socials\n💼 **Hire** — Internship & job availability\n🎨 **Portfolio Modes** — Dev Mode vs Air Mode\n🌟 **Fun Facts** — Interesting trivia!\n\nJust type naturally — I understand English and Filipino! 🦊",
-      fil: "Ito ang mga pwede kong sabihin sa iyo! 🐾\n\n🛠️ **Skills** — Tech stack, languages, tools\n📁 **Projects** — CLICKizenship, OJT Tracker at iba pa\n🎓 **About** — Background, paaralan, PUP\n🏅 **Certifications** — Cisco, badges, credentials\n🏆 **Achievements** — Awards, recognitions\n📅 **Events** — Colloquium, Cosmos, Stellar Bootcamp\n📩 **Contact** — Email, phone, socials\n💼 **Hire** — Internship at job availability\n🎨 **Portfolio Modes** — Dev Mode vs Air Mode\n🌟 **Fun Facts** — Mga kawili-wiling trivia!\n\nMag-type lang ng natural — naiintindihan ko ang English at Filipino! 🦊"
+      en: "I can help with:\n\n- **About Gizmo** — my identity, breed, birthday, pet passport\n- **About John Gil** — fresh graduate, PUP BSIT 2026\n- **Dev Mode vs Air Mode** — who each mode is for\n- **Skills** — tech stack and tools\n- **Projects** — CLICKizenship, GlideN'Go, GastaDoor, Bugtong2x, and more\n- **Certifications** — Cisco, GDG, Claude, CyberSmart, freeCodeCamp\n- **Events & gallery** — PBW, Stellar, GDG, Cosmos\n- **Contact** — email, phone, social links\n- **Hire** — internships and junior roles\n- **Resume** — download in Dev Mode Contact\n\nType in **English** or **Filipino** — I understand both.",
+      fil: "Matutulungan kita sa:\n\n- **Tungkol kay Gizmo** — identity, lahi, birthday, pet passport\n- **Tungkol kay John Gil** — fresh graduate, PUP BSIT 2026\n- **Dev Mode vs Air Mode** — para kanino ang bawat mode\n- **Skills** — tech stack at tools\n- **Projects** — CLICKizenship, GlideN'Go, GastaDoor, Bugtong2x, at iba pa\n- **Certifications** — Cisco, GDG, Claude, CyberSmart, freeCodeCamp\n- **Events & gallery** — PBW, Stellar, GDG, Cosmos\n- **Contact** — email, phone, social links\n- **Hire** — internships at junior roles\n- **Resume** — download sa Dev Mode Contact\n\nMag-type sa **English** o **Filipino** — naiintindihan ko pareho."
     },
 
     thanks: {
       en: [
-        "You're welcome! 🐾 That's what I'm here for! Anything else you'd like to know about John Gil?",
-        "Happy to help! 🦊 Feel free to ask me anything else about John Gil's portfolio!",
-        "Anytime! 🌟 I love talking about John Gil's work. Any other questions?"
+        "You're welcome! Anything else about John Gil's portfolio?",
+        "Happy to help. Ask me about projects, modes, or contact info anytime.",
+        "Woof! Glad I could help. What else would you like to know?"
       ],
       fil: [
-        "Walang anuman! 🐾 Para doon ako! May iba pa bang gusto mong malaman tungkol kay John Gil?",
-        "Masaya akong tumulong! 🦊 Huwag mag-atubiling magtanong pa tungkol sa portfolio ni John Gil!",
-        "Anumang oras! 🌟 Gustong-gusto kong pag-usapan ang gawa ni John Gil. May iba pang tanong?"
+        "Walang anuman! May iba pa bang gusto mong malaman tungkol sa portfolio?",
+        "Masaya akong tumulong. Magtanong lang tungkol sa projects, modes, o contact info.",
+        "Woof! Natuwa akong makatulong. Ano pa ang gusto mong malaman?"
       ]
     },
 
     fallback: {
       en: [
-        "Hmm, I'm not quite sure about that one! 🤔 Try asking me about John Gil's **skills**, **projects**, **certifications**, **events**, or how to **contact** him!",
-        "Ruff! 🐾 That's a tricky question for me. I know tons about John Gil though — try asking about his **tech stack**, **achievements**, **school**, or **portfolio modes**!",
-        "Woof woof! 🦊 I didn't quite catch that. I'm best at answering questions about John Gil's work, background, and portfolio. Type **help** to see everything I can answer! 🐾"
+        "I'm not sure about that one. Try asking about **skills**, **projects**, **Dev Mode vs Air Mode**, **certifications**, **events**, or **contact**.",
+        "Woof — that's outside my dog brain. I know a lot about John Gil's portfolio though. Type **help** to see topics I cover.",
+        "Hmm, I didn't catch that. Ask about his **tech stack**, **GlideN'Go**, **GastaDoor**, **fresh graduate** background, or how to **hire** him."
       ],
       fil: [
-        "Hmm, hindi ako sigurado doon! 🤔 Subukan mong tanungin ako tungkol sa **skills**, **projects**, **certifications**, **events**, o kung paano **makipag-ugnayan** kay John Gil!",
-        "Ruff! 🐾 Mahirap na tanong iyon para sa akin. Pero marami akong alam tungkol kay John Gil — subukan mong tanungin ang kanyang **tech stack**, **achievements**, **paaralan**, o **portfolio modes**!",
-        "Woof woof! 🦊 Hindi ko masyadong naintindihan iyon. Pinakamahusay akong sumagot ng mga tanong tungkol sa gawa, background, at portfolio ni John Gil. I-type ang **tulong** para makita ang lahat ng pwede kong sagutin! 🐾"
+        "Hindi ako sigurado doon. Subukang magtanong tungkol sa **skills**, **projects**, **Dev Mode vs Air Mode**, **certifications**, **events**, o **contact**.",
+        "Woof — wala sa aking asong utak iyan. Marami akong alam tungkol sa portfolio ni John Gil. I-type ang **tulong** para sa mga topic.",
+        "Hmm, hindi ko naintindihan. Magtanong tungkol sa **tech stack**, **about**, **contacts**,  o kung paano siya **makilala**."
       ]
     }
   };
 
-  // ── Smart Response Engine ────────────────────────────
+  const QUICK_CHIPS = {
+    gizmo: {
+      label: 'Gizmo',
+      kb: 'gizmo'
+    },
+    skills: {
+      label: 'Skills & Tech Stack',
+      kb: 'skills',
+      tab: { dev: 'about', air: 'about' },
+      anchor: { dev: 'jg-about-skills', air: 'jg-air-skills' }
+    },
+    modes: {
+      label: 'Modes',
+      kb: 'mode'
+    },
+    contact: {
+      label: 'Contact',
+      kb: 'contact',
+      tab: { dev: 'contact', air: 'contact' },
+      anchor: { dev: 'jg-dev-contact-links', air: 'jg-air-contact-info' }
+    }
+  };
+
+  function setQuickRepliesVisible(show) {
+    if (!quickReplies) return;
+    quickReplies.classList.toggle('gizmo-quick-replies--hidden', !show);
+    quickReplies.setAttribute('aria-hidden', show ? 'false' : 'true');
+  }
+
+  function boldHtml(text) {
+    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  function formatBotMessage(text, L) {
+    const modeDev = L === 'fil'
+      ? '<div class="gizmo-mode-item"><strong>Dev Mode</strong><span>Dark, tech-focused. Para sa developers at IT teams.</span></div>'
+      : '<div class="gizmo-mode-item"><strong>Dev Mode</strong><span>Dark and tech-focused. Built for developers and IT teams.</span></div>';
+    const modeAir = L === 'fil'
+      ? '<div class="gizmo-mode-item"><strong>Air Mode</strong><span>Light, corporate. Para sa HR at recruiters.</span></div>'
+      : '<div class="gizmo-mode-item"><strong>Air Mode</strong><span>Light and corporate. Built for HR and recruiters.</span></div>';
+
+    if (text.includes('__MODE_DEV__')) {
+      const lines = text.split('\n').filter(l => l.trim() && !l.includes('__MODE_'));
+      const lead = lines[0] || '';
+      const note = lines[lines.length - 1] || '';
+      return `<div class="gizmo-lead">${boldHtml(lead)}</div><div class="gizmo-mode">${modeDev}${modeAir}</div><div class="gizmo-note">${boldHtml(note)}</div>`;
+    }
+
+    const rows = text.split('\n').filter(Boolean);
+    const rowLines = rows.filter(l => /^\*\*.+:\*\*/.test(l));
+
+    if (rowLines.length >= 2) {
+      const lead = rows.find(l => /^\*\*[^*]+\*\*$/.test(l.trim()));
+      const body = rowLines.map(line => {
+        const m = line.match(/^\*\*(.+?):\*\*\s*(.*)$/);
+        return m ? `<div class="gizmo-row"><span class="gizmo-k">${m[1]}</span><span class="gizmo-v">${m[2]}</span></div>` : '';
+      }).join('');
+      const note = rows.find(l => /^See |^Tingnan |^Passport |^Larawan:/.test(l));
+      return `${lead ? `<div class="gizmo-lead">${boldHtml(lead)}</div>` : ''}${body}${note ? `<div class="gizmo-note">${boldHtml(note)}</div>` : ''}`;
+    }
+
+    return boldHtml(text).replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+  }
+
+  function getPortfolioMode() {
+    return document.documentElement.getAttribute('data-mode') === 'air' ? 'air' : 'dev';
+  }
+
+  function scrollToAnchor(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'), 10) || 70;
+    const top = el.getBoundingClientRect().top + window.scrollY - navH - 12;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }
+
+  function goToChipTarget(chip) {
+    if (!chip.tab) return;
+    const mode = getPortfolioMode();
+    const tab = chip.tab[mode];
+    const anchor = chip.anchor && chip.anchor[mode];
+
+    if (mode === 'dev' && typeof activateDevTab === 'function') activateDevTab(tab);
+    else if (mode === 'air' && typeof activateSimpleTab === 'function') activateSimpleTab(tab);
+
+    setTimeout(() => { if (anchor) scrollToAnchor(anchor); }, 520);
+  }
+
+  function isJohnGilQuery(m) {
+    return /john gil|tungkol kay john|about john|who is john|sino si john|sino si gil|sino si mayor|who is mayor|who is gil|tell me about john|si john\b/i.test(m);
+  }
+
+  function isGizmoQuery(m) {
+    if (isJohnGilQuery(m)) return false;
+    return /gizmo mayor|gizmo|furbot|who are you|what are you|sino ka|ano ka|ikaw ba|tungkol sa iyo|about yourself|tell me about yourself|kwento mo|passport|pasaporte|microchip|breed|lahi|birthday|kapanganakan|petsa ng kapanganakan|creamy white|japanese spitz|husky|may-ari mo|your owner|gizmo.*owner|owner.*gizmo|aso ba ikaw|ikaw bang aso|virtual dog|virtual na aso|sino si gizmo|who is gizmo|ano ang lahi|ilan taon ka na|how old are you|kelan ka pinanganak/i.test(m);
+  }
+
   function getResponse(msg) {
-    const m   = msg.toLowerCase().trim();
-    lang      = detectLang(msg);
-    const L   = lang; // shorthand
+    const m = msg.toLowerCase().trim();
+    lang = detectLang(msg);
+    const L = lang;
     msgCount++;
 
-    // Helper to pick correct language branch
     const t = (key) => {
       const node = KB[key];
       if (!node) return null;
@@ -186,83 +287,46 @@
       return node[L] || node.en;
     };
 
-    // ── Greetings ──
+    const match = (key, re) => {
+      if (re.test(m)) { lastTopic = key; return t(key); }
+      return null;
+    };
+
+    let r;
     if (/^(hi|hello|hey|yo|sup|hoy|uy|kamusta|kumusta|musta|good morning|good afternoon|good evening|magandang|maayong)/i.test(m))
       return t('greet');
 
-    // ── Who is Gizmo / what are you ──
-    if (/gizmo|furbot|who are you|what are you|sino ka|ano ka|ikaw/i.test(m) && !/john|mayor/.test(m))
-      return t('name');
+    if (isGizmoQuery(m)) {
+      if (/who are you|what are you|sino ka|ano ka|ikaw ba|about yourself|tungkol sa iyo|sino si gizmo|who is gizmo/i.test(m))
+        return (lastTopic = 'name', t('name'));
+      return (lastTopic = 'gizmo', t('gizmo'));
+    }
 
-    // ── About John Gil ──
-    if (/who is john|sino si john|about john|tungkol kay john|tell me about john|about him|background|student|pup|university|school|college|course|bsit|graduating|nag-aaral|pinag-aralan/i.test(m))
-      return t('who');
+    if ((r = match('who', /who is john|sino si john|about john|tungkol kay john|tell me about john|about him|background|fresh graduate|graduate|bsit|estudyante|profile|bio/i))) return r;
+    if ((r = match('mode', /dev mode|air mode|viewing mode|portfolio mode|dalawang mode|switch mode|dark mode|light mode|corporate mode|recruiter|hiring team|developer mode|tech mode|rocket|windmill|^modes$/i))) return r;
+    if ((r = match('school', /pup|polytechnic|university|school|college|ccis|campus|paaralan|unibersidad|class of 2026/i)) && !/org|event/.test(m)) return r;
+    if ((r = match('skills', /skill|tech stack|techstack|kakayahan|full.?stack|ui\/?ux|cybersecurity|cloud tech|project manag/i))) {
+      goToChipTarget(QUICK_CHIPS.skills);
+      return r;
+    }
+    if ((r = match('projects', /project|work|clickiz|glide|lakbay|ojt|passfolio|gasta|bugtong|build|system|platform|app|carousel|gawa|nagawa|hackathon/i))) return r;
+    if ((r = match('hire', /hire|internship|job|opportunity|recruit|looking|position|junior|available|work|bakante|trabaho|open to/i))) return r;
+    if ((r = match('contact', /contact|email|phone|number|reach|linkedin|github|facebook|instagram|social|makipag-ugnayan|numero|telepono/i)) && !/hire/.test(m)) {
+      goToChipTarget(QUICK_CHIPS.contact);
+      return r;
+    }
+    if ((r = match('events', /event|colloquium|cosmos|stellar|bootcamp|gallery|coverflow|pbw|blockchain|aws|photo|larawan|event gallery/i))) return r;
+    if ((r = match('gdg', /gdg|google developer|developer group/i))) return r;
+    if ((r = match('certifications', /cert|cisco|badge|credential|netacad|certification|sertipiko|claude|anthropic|cybersmart|freecodecamp|tesda/i))) return r;
+    if ((r = match('organizations', /org|organization|affiliated|club|society|association|samahan|miyembro|devkada|aws cloud/i))) return r;
+    if ((r = match('python', /python|flask|pandas|matplotlib|snippet|code viewer/i))) return r;
+    if ((r = match('location', /location|address|where|city|manila|paranaque|live|nakatira|saan.*nakatira|lugar/i))) return r;
+    if ((r = match('achievements', /achieve|award|honor|lister|president|recogni|panalo|nanalo|accomplishment|tagumpay|champion/i))) return r;
+    if ((r = match('resume', /resume|cv|download.*pdf|john gil mayor.*pdf/i))) return r;
+    if ((r = match('fun', /fun|joke|cool|wow|nice|amazing|interesting|trivia|random|kwento|alam mo ba/i))) return r;
+    if ((r = match('thanks', /thank|thanks|salamat|ty|thx|maraming salamat|pasalamat/i))) return r;
+    if ((r = match('help', /help|what can|what do|ask|guide|tulong|ano.*pwede|pwede.*tanungin/i))) return r;
 
-    // ── School / PUP specifically ──
-    if (/pup|polytechnic|university|school|college|ccis|campus|paaralan|unibersidad/i.test(m) && !/org/.test(m))
-      return t('school');
-
-    // ── Skills / Tech Stack ──
-    if (/skill|tech|stack|language|html|css|javascript|python|mysql|ui|ux|design|figma|know|tools|kaya|gamit|ginamit|ano.*alam|kakayahan/i.test(m))
-      return t('skills');
-
-    // ── Projects ──
-    if (/project|work|clickiz|pvc|ojt|passfolio|data science|build|make|create|gawa|nagawa|trabaho|system|platform|app/i.test(m))
-      return t('projects');
-
-    // ── Hire / Availability ──
-    if (/hire|internship|job|opportunity|recruit|looking|position|junior|available|work|salary|open|bakante|trabaho.*niya|available.*siya/i.test(m))
-      return t('hire');
-
-    // ── Contact ──
-    if (/contact|email|phone|number|reach|linkedin|github|facebook|instagram|social|makipag-ugnayan|numero|telepono/i.test(m) && !/hire/.test(m))
-      return t('contact');
-
-    // ── Events ──
-    if (/event|colloquium|cosmos|stellar|bootcamp|photo|gallery|attend|larawan|litrato|event.*niya|events/i.test(m))
-      return t('events');
-
-    // ── GDG ──
-    if (/gdg|google developer|developer group|google.*group|grupo/i.test(m))
-      return t('gdg');
-
-    // ── Certifications ──
-    if (/cert|cisco|badge|credential|netacad|certification|sertipiko/i.test(m))
-      return t('certifications');
-
-    // ── Organizations ──
-    if (/org|organization|affiliated|club|society|association|samahan|miyembro|member/i.test(m))
-      return t('organizations');
-
-    // ── Portfolio Modes ──
-    if (/mode|switch|air|dev mode|dark|light|theme|portfolio.*mode|dalawang mode/i.test(m))
-      return t('mode');
-
-    // ── Python ──
-    if (/python|flask|pandas|matplotlib|script|snippet|code/i.test(m))
-      return t('python');
-
-    // ── Location ──
-    if (/location|address|where|city|manila|paranaque|live|nakatira|saan.*nakatira|lugar/i.test(m))
-      return t('location');
-
-    // ── Achievements / Awards ──
-    if (/achieve|award|honor|lister|president|recogni|award|panalo|nanalo|award.*niya|accomplishment|tagumpay/i.test(m))
-      return t('achievements');
-
-    // ── Fun / Trivia ──
-    if (/fun|joke|cool|wow|nice|amazing|interesting|trivia|random|kwento|interesting.*fact|alam mo ba/i.test(m))
-      return t('fun');
-
-    // ── Thanks ──
-    if (/thank|thanks|salamat|ty|thx|maraming salamat|pasalamat/i.test(m))
-      return t('thanks');
-
-    // ── Help / What can you do ──
-    if (/help|what can|what do|ask|guide|tulong|ano.*pwede|pwede.*tanungin|saan.*humingi/i.test(m))
-      return t('help');
-
-    // ── Follow-up context (if user types short replies) ──
     if (m.length < 5 && lastTopic) return t(lastTopic);
 
     return t('fallback');
@@ -270,13 +334,14 @@
 
   function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-  // ── UI Helpers ─────────────────────────────────────
-  function addMessage(text, type) {
+  function addMessage(text, type, L) {
     const msg = document.createElement('div');
     msg.className = `gizmo-msg ${type}`;
-    msg.innerHTML = text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n/g, '<br>');
+    if (type === 'bot') {
+      msg.innerHTML = formatBotMessage(text, L || lang);
+    } else {
+      msg.textContent = text;
+    }
     messages.appendChild(msg);
     messages.scrollTop = messages.scrollHeight;
     return msg;
@@ -304,44 +369,56 @@
   }
 
   function removeTypingIndicator() {
-    const t = document.getElementById('gizmoTyping');
-    if (t) t.remove();
+    const el = document.getElementById('gizmoTyping');
+    if (el) el.remove();
   }
 
   function sendMessage(text) {
-    if (!text.trim()) return;
+    if (!text.trim() || chipBusy) return;
+
     addMessage(text, 'user');
     input.value = '';
+    setQuickRepliesVisible(false);
     showTypingIndicator();
 
-    // Dynamic delay based on response length
     const delay = 700 + Math.random() * 700;
     setTimeout(() => {
       removeTypingIndicator();
-      const response = getResponse(text);
-      addMessage(response, 'bot');
-
-      // Suggest follow-up chips after a few messages
-      if (msgCount === 2) {
-        setTimeout(() => addMessage("💡 _Tip: You can ask me in **Filipino** too! / Pwede kang magtanong sa **Filipino**!_", 'bot'), 500);
-      }
+      const reply = getResponse(text);
+      addMessage(reply, 'bot', lang);
+      setQuickRepliesVisible(true);
     }, delay);
   }
 
-  // ── Quick Replies ──────────────────────────────────
+  function handleQuickChip(key) {
+    const chip = QUICK_CHIPS[key];
+    if (!chip || chipBusy) return;
+
+    chipBusy = true;
+    lang = detectLang(chip.label);
+    setQuickRepliesVisible(false);
+    addMessage(chip.label, 'user');
+    showTypingIndicator();
+
+    const delay = 450 + Math.random() * 350;
+    setTimeout(() => {
+      removeTypingIndicator();
+      const node = KB[chip.kb];
+      const reply = node && (node[lang] || node.en);
+      addMessage(reply || rand(KB.fallback.en), 'bot', lang);
+      goToChipTarget(chip);
+      chipBusy = false;
+      setQuickRepliesVisible(true);
+    }, delay);
+  }
+
   document.querySelectorAll('.gizmo-quick-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const key = btn.dataset.quick;
-      const map = {
-        skills:   "Tell me about John Gil's skills!",
-        projects: "What projects has he built?",
-        contact:  "How can I contact John Gil?"
-      };
-      if (map[key]) sendMessage(map[key]);
+      if (QUICK_CHIPS[key]) handleQuickChip(key);
     });
   });
 
-  // ── Open / Close ────────────────────────────────────
   function openChat() {
     isOpen = true;
     window_.classList.add('gizmo-open');
@@ -352,7 +429,7 @@
     input.focus();
     if (!hasGreeted) {
       hasGreeted = true;
-      setTimeout(() => addMessage(rand(KB.greet.en), 'bot'), 400);
+      setTimeout(() => addMessage(rand(KB.greet.en), 'bot', 'en'), 400);
     }
   }
 
