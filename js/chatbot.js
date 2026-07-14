@@ -167,7 +167,7 @@
       en: [
         "I'm not sure about that one. Try asking about **skills**, **projects**, **Dev Mode vs Air Mode**, **certifications**, **events**, or **contact**.",
         "Woof — that's outside my dog brain. I know a lot about John Gil's portfolio though. Type **help** to see topics I cover.",
-        "Hmm, I didn't catch that. Ask about his **tech stack**, **GlideN'Go**, **GastaDoor**, **fresh graduate** background, or how to **hire** him."
+        "Hmm, I didn't catch that. Ask about his **Skills**, **Tech Stack**, **Contacts**, **IT** background, or how to **reach** him."
       ],
       fil: [
         "Hindi ako sigurado doon. Subukang magtanong tungkol sa **skills**, **projects**, **Dev Mode vs Air Mode**, **certifications**, **events**, o **contact**.",
